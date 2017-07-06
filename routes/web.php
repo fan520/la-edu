@@ -14,3 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+/*后台路由*/
+//后台登陆
+Route::get('admin/login','Admin\LoginController@login');
