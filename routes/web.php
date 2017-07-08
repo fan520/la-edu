@@ -17,4 +17,22 @@ Route::get('/', function () {
 
 /*后台路由*/
 //后台登陆
-Route::get('admin/login','Admin\LoginController@login');
+Route::match(['get','post'],'admin/login','Admin\LoginController@login');
+
+//后台登陆后才能访问的路由
+Route::group(['middleware' => 'checklogin','namespace' => 'Admin','prefix' => 'admin'],function(){
+    //后台首页
+    Route::get('index','AdminController@index');
+
+    //后台欢迎页面
+    Route::get('welcome','AdminController@welcome');
+
+    //品牌资源路由
+    Route::resource('brand','BrandController');
+    //品牌logo路由
+    Route::post('brand/logo','BrandController@logo');
+    //获取品牌列表数据
+    Route::post('brand/getList','BrandController@getList');
+
+
+});
