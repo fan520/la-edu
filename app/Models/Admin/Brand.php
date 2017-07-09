@@ -14,6 +14,9 @@ class Brand extends Model
     //指定表名
     protected $table = 'brand';
 
+    //添加新增字段白名单
+    protected $fillable = ['brand_name','brand_site','brand_logo','description'];
+
     /* @fun: 增加数据的验证
      * @author: fanzhiyi
      * @date: 2017/7/8 11:12

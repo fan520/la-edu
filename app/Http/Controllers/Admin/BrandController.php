@@ -15,7 +15,7 @@ class BrandController extends Controller
      * @param:
      * @return:
      */
-    public function index()
+    public function show()
     {
         return view('admin.brand.index');
     }
@@ -29,13 +29,28 @@ class BrandController extends Controller
     public function getList(Request $request)
     {
         $pagesize = $request->get('pageSize');
-        $pagestart = $request->get('page')-1;
-        $offset = $pagestart*$pagesize;
-        $data = DB::table('brand')->offset($offset)->limit($pagesize)->get()->toArray();
+        $pagestart = $request->get('page') - 1;
+        $offset = $pagestart * $pagesize;
+
+        //拼接查询条件
+        $query = Brand::query();//查询对象
+        //开始时间
+        if ($start = $request->get('updated_start')) {
+            $query->where('updated_at', '>', $start);
+        }
+        //终止时间
+        if ($end = $request->get('updated_end')) {
+            $query->where('updated_at', '<', $end);
+        }
+        if ($brand_name = $request->get('brand_name')) {
+            $query->where('brand_name', 'LIKE', '%' . $brand_name . '%');
+        }
+        $data = $query->offset($offset)->limit($pagesize)->get()->toArray();
+
         return [
             'draw' => $request->get('draw'),
-            'recordsFiltered' => Brand::count(),//被检索后的数量
-            'recordsTotal' => Brand::count(),//总记录数
+            'recordsFiltered' => $query->count(),//被检索后的数量
+            'recordsTotal' => $query->count(),//总记录数
             'data' => $data//返回的数据
         ];
     }
@@ -64,8 +79,7 @@ class BrandController extends Controller
         $data['brand_site'] = $request->get('brand_site');
         $data['brand_logo'] = $request->get('brand_logo');
         $data['description'] = $request->get('description');
-        $data['created_at'] = date('Y-m-d H:i:s',time());
-        $data['updated_at'] = date('Y-m-d H:i:s',time());
+
 
         //执行验证
         if (empty($data)) {
@@ -77,13 +91,16 @@ class BrandController extends Controller
         //判断验证结果
         if (!$validator->fails()) {
             //插入数据
-            $res = DB::table('brand')->insert($data);
+            $res = Brand::create($data);
             if ($res) {
                 echo "<script type='text/javascript'>
                 alert('添加成功!');
                 var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                parent.location.reload(); // 父页面刷新
                 parent.layer.close(index);//关闭当前弹出层
                 </script>";
+            } else {
+                echo "<script type='text/javascript'>alert('添加失败!');window.location.href='admin/login';</script>";
             }
         } else {
             return back()->withErrors($validator);
@@ -91,13 +108,37 @@ class BrandController extends Controller
 
     }
 
+    /* @fun: 批量删除品牌
+     * @author: fanzhiyi
+     * @date: 2017/7/9 21:50
+     * @param: $ids 要删除数据的id
+     * @return:
+     */
+    public function batchDel(Request $request)
+    {
+        //获取要删除数据的id
+        $ids = $request->get('ids');
+        if(!$ids){
+            return [
+                'status' => false,
+            ];
+        }
+
+        Brand::whereIn('id',$ids)->get()->each(function($i){
+            $i->delete();
+        });
+
+        return [
+            'status' => true,
+        ];
+    }
     /*
-  * @fun 上传logo
-  * @author fanzhiyi
-  * @date 2017/6/22 21:00
-  * @param
-  * @return
- */
+      * @fun 上传logo
+      * @author fanzhiyi
+      * @date 2017/6/22 21:00
+      * @param
+      * @return
+     */
     public function logo(Request $request)
     {
         //接受上传图片信息

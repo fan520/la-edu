@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -27,5 +28,17 @@ class AdminController extends Controller
     public function welcome()
     {
         return view('admin.index.welcome');
+    }
+
+    /* @fun: 退出
+     * @author: fanzhiyi
+     * @date: 2017/7/9 18:27
+     * @param:
+     * @return:
+     */
+    public function loginOut()
+    {
+        Auth::logout();
+        return redirect('admin/login');
     }
 }

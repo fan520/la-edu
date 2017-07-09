@@ -23,11 +23,13 @@
         -
         <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'datemin\')}',maxDate:'%y-%M-%d' })" id="datemax"
                class="input-text Wdate" style="width:120px;">
-        <input type="text" class="input-text" style="width:250px" placeholder="输入品牌名称..." id="" name="">
-        <button type="submit" class="btn btn-success radius" id="" name=""><i class="Hui-iconfont">&#xe665;</i> 搜品牌
+        <input type="text" class="input-text" style="width:250px" placeholder="输入品牌名称..." id="search_brand_name"
+               name="">
+        <button type="submit" class="btn btn-success radius" id="searchBrand" name=""><i class="Hui-iconfont">
+                &#xe665;</i> 搜品牌
         </button>
     </div>
-    <div class="cl pd-5 bg-1 bk-gray mt-20"><span class="l"><a href="javascript:;" onclick="datadel()"
+    <div class="cl pd-5 bg-1 bk-gray mt-20"><span class="l"><a href="javascript:;" onclick="brandDel()"
                                                                class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a> <a
                     href="javascript:;" onclick="member_add()" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加品牌</a></span>
     </div>
@@ -55,10 +57,11 @@
 
 <script type="text/javascript">
     $(function () {
-        $('.table-sort').dataTable({
+        //--表格配置start--
+        $table = $('.table-sort').dataTable({
             "aaSorting": [[1, "desc"]],//默认第几个排序
             "bStateSave": true,//状态保存
-            "lengthMenu": [ 2, 5, 10, 20, 50 ],//表格左上角可选每页显示条数
+            "lengthMenu": [2, 5, 10, 20, 50],//表格左上角可选每页显示条数
             "searching": false,//关闭本地搜索
             "serverSide": true,//开启服务器模式
             'createdRow': function (row, data) {//当每行创建的时候执行的回调函数
@@ -70,6 +73,13 @@
                 $row.find('td:last').html("<a title='编辑' href='javascript:void(0);' onclick=member_edit('编辑','member-add.html','4','','510') class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6df;</i></a> <a title='删除' href='javascript:void(0);' onclick=member_del(this,'1') class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6e2;</i></a>");
 
             },
+
+            //在第二列添加序号
+//            "fnDrawCallback"    : function(){
+//                this.api().column(1).nodes().each(function(cell, i) {
+//                    cell.innerHTML =  i + 1;
+//                });
+//            },
             'ajax': {
                 'url': "{{ url('admin/brand/getList') }}",
                 'type': "post",
@@ -80,6 +90,16 @@
                     data.page = data.start >= data.length ? Math.ceil(data.start / data.length) + 1 : 1;
                     //添加csrf值
                     data._token = "{{ csrf_token() }}";
+
+                    //*--附加搜索条件start--*//
+                    //开始日期
+                    data.updated_start = $('#datemin').val();
+                    //结束日期
+                    data.updated_end = $('#datemax').val();
+                    //品牌名称
+                    data.brand_name = $('#search_brand_name').val();
+//                    console.log(data);
+                    //*--附加搜索条件end--*//
                 },
             },
             'columns': [
@@ -99,83 +119,65 @@
                 {"orderable": false, "aTargets": [0, 8]}// 制定列不参与排序
             ]
         });
-
+        ////--表格配置end--
     });
-    /*用户-添加*/
+
+    /*品牌-添加start*/
     function member_add(title, url, w, h) {
         var title = "添加品牌";//弹窗标题
         var url = "{{ url('admin/brand/create') }}";//弹窗的地址
         var h = "510";//弹窗高度
         layer_show(title, url, w, h);
     }
-    /*用户-查看*/
-    function member_show(title, url, id, w, h) {
-        layer_show(title, url, w, h);
-    }
-    /*用户-停用*/
-    function member_stop(obj, id) {
-        layer.confirm('确认要停用吗？', function (index) {
-            $.ajax({
-                type: 'POST',
-                url: '',
-                dataType: 'json',
-                success: function (data) {
-                    $(obj).parents("tr").find(".td-manage").prepend('<a style="text-decoration:none" onClick="member_start(this,id)" href="javascript:;" title="启用"><i class="Hui-iconfont">&#xe6e1;</i></a>');
-                    $(obj).parents("tr").find(".td-status").html('<span class="label label-defaunt radius">已停用</span>');
-                    $(obj).remove();
-                    layer.msg('已停用!', {icon: 5, time: 1000});
-                },
-                error: function (data) {
-                    console.log(data.msg);
-                },
-            });
-        });
-    }
+    /*品牌-添加end*/
 
-    /*用户-启用*/
-    function member_start(obj, id) {
-        layer.confirm('确认要启用吗？', function (index) {
-            $.ajax({
-                type: 'POST',
-                url: '',
-                dataType: 'json',
-                success: function (data) {
-                    $(obj).parents("tr").find(".td-manage").prepend('<a style="text-decoration:none" onClick="member_stop(this,id)" href="javascript:;" title="停用"><i class="Hui-iconfont">&#xe631;</i></a>');
-                    $(obj).parents("tr").find(".td-status").html('<span class="label label-success radius">已启用</span>');
-                    $(obj).remove();
-                    layer.msg('已启用!', {icon: 6, time: 1000});
-                },
-                error: function (data) {
-                    console.log(data.msg);
-                },
-            });
-        });
-    }
-    /*用户-编辑*/
+    /*品牌-编辑start*/
     function member_edit(title, url, id, w, h) {
         layer_show(title, url, w, h);
     }
-    /*密码-修改*/
-    function change_password(title, url, id, w, h) {
-        layer_show(title, url, w, h);
-    }
-    /*用户-删除*/
-    function member_del(obj, id) {
+    /*品牌-编辑end*/
+
+    /*品牌-删除start*/
+    function brandDel() {
         layer.confirm('确认要删除吗？', function (index) {
-            $.ajax({
-                type: 'POST',
-                url: '',
-                dataType: 'json',
-                success: function (data) {
-                    $(obj).parents("tr").remove();
-                    layer.msg('已删除!', {icon: 1, time: 1000});
-                },
-                error: function (data) {
-                    console.log(data.msg);
-                },
+            //获取选中的数据的id
+            var ids = [];
+            $('input:checked').each(function () {
+                ids.push($(this).val());
             });
+            //判断是否选中
+            if(ids.length < 1){
+                layer.alert('请至少选中一条数据!');
+            } else {
+                $.ajax({
+                    type: 'post',
+                    url: "{{ url('admin/brand/batchDel') }}",
+                    data: {'ids': ids, '_token': "{{ csrf_token() }}"},
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.status) {
+                            layer.msg('已删除!', {icon: 1, time: 1000});
+                            $table.api().ajax.reload();//刷新表格对象 $table是上面的table对象,往上找能够发现为自定义
+                            layer.close(index);
+                        } else {
+                            layer.msg('删除失败!', {icon: 2, time: 1000});
+                            layer.close(index);
+                        }
+                    },
+                    error: function (data) {
+                        console.log(data.msg);
+                    },
+                });
+            }
         });
     }
+    /*品牌-删除start*/
+
+    /*品牌-搜索start*/
+    $('#searchBrand').click(function () {
+        $table.api().ajax.reload();//刷新表格对象 $table是上面的table对象,往上找能够发现为自定义
+    });
+    /*品牌-搜索start*/
 </script>
 </body>
 </html>
