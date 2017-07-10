@@ -15,7 +15,7 @@ class BrandController extends Controller
      * @param:
      * @return:
      */
-    public function show()
+    public function index()
     {
         return view('admin.brand.index');
     }
@@ -132,6 +132,30 @@ class BrandController extends Controller
             'status' => true,
         ];
     }
+
+    /* @fun: 删除一条数据
+     * @author: fanzhiyi
+     * @date: 2017/7/10 10:57
+     * @param: $id 要删除的数据的id
+     * @return:json
+     */
+    public function destroy(Request $request)
+    {
+        $id = $request->get('id');
+        //使用Brand模型执行删除可以实现假删除,如果使用DB::table()->where()->delete(),会真删除
+        $res = Brand::where('id','=',$id)->delete();
+        if($res){
+            return [
+                'status' => true
+            ];
+        }else{
+            return [
+                'status' => false
+            ];
+        }
+    }
+
+
     /*
       * @fun 上传logo
       * @author fanzhiyi
@@ -141,6 +165,7 @@ class BrandController extends Controller
      */
     public function logo(Request $request)
     {
+
         //接受上传图片信息
         $file = $request->file('file');
 
@@ -152,6 +177,7 @@ class BrandController extends Controller
             $realPath = $file->getRealPath();   //临时文件的绝对路径
             $datapath = date('Y-m-d', time());//每日为一个文件夹
             $Path = public_path() . "/admin/uploads/brand/";//上传路径
+
             //文件夹不存在就创建
             if (!file_exists($Path)) {
                 mkdir($Path);
@@ -165,12 +191,25 @@ class BrandController extends Controller
             $res = move_uploaded_file($realPath, $Path . $datapath . '/' . $filename);
             //判断上传结果并返回信息
             if ($res) {
+                //判断是否有旧图片,有的话就删除
+                $old_pic = public_path().$request->get('old_logo');
+                if(!empty($request->get('old_logo')) && file_exists($old_pic)){
+                    unlink($old_pic);
+                }
+
+                //删除数据库中的logo路径,更新新的图片信息
+                $save = Brand::find($request->get('brand_id'));
+                $save->brand_logo = "/admin/uploads/brand/" . $datapath . '/' . $filename;
+                $save->save();
+
+                //成功之后组装返回数据
                 $data = [
                     'status' => '1',
                     'msg' => '图片上传成功!',
                     'url' => "/admin/uploads/brand/" . $datapath . '/' . $filename
                 ];
             } else {
+                //失败组装返回数据
                 $data = [
                     'status' => '2',
                     'msg' => '图片上传失败!',
@@ -187,5 +226,48 @@ class BrandController extends Controller
         echo json_encode($data);
     }
 
+    /* @fun: 修改品牌的显示页面
+     * @author: fanzhiyi
+     * @date: 2017/7/10 11:37
+     * @param: $id 要修改的品牌id
+     * @return: 
+     */
+    public function edit($id)
+    {
+        //获取要修改的这条数据
+        $data = Brand::find($id);
+
+        //返回数据并显示页面
+        return view('admin.brand.edit')->with('edit',$data);
+    }
+
+    /* @fun: 保存修改的数据
+     * @author: fanzhiyi
+     * @date: 2017/7/10 15:59
+     * @param:
+     * @return:
+     */
+    public function update(Request $request)
+    {
+        //获取准备更新的数据
+        $id = $request->get('id');
+        $input = $request->only(['brand_name','brand_site','brand_logo','description']);
+
+        //执行更新操
+        $res = Brand::where('id','=',$id)->update($input);
+
+        //返回执行结果
+        if($res){
+            echo "<script type='text/javascript'>
+                alert('修改成功!');
+                var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                parent.location.reload(); // 父页面刷新
+                parent.layer.close(index);//关闭当前弹出层
+                </script>";
+        } else {
+            return back()->withErrors('修改失败!');
+        }
+
+    }
 
 }

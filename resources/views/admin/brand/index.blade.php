@@ -31,7 +31,7 @@
     </div>
     <div class="cl pd-5 bg-1 bk-gray mt-20"><span class="l"><a href="javascript:;" onclick="brandDel()"
                                                                class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a> <a
-                    href="javascript:;" onclick="member_add()" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加品牌</a></span>
+                    href="javascript:;" onclick="brand_add()" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加品牌</a></span>
     </div>
     <div class="mt-20">
         <table class="table table-border table-bordered table-hover table-bg table-sort">
@@ -68,9 +68,14 @@
                 var $row = $(row);//当前行对象
                 //第一列加入复选框
                 $row.find('td:eq(0)').html("<input type='checkbox' name='id[]' value='" + data.id + "'/>");
-                $row.find('td:eq(4)').html("<img  style='width:80px;border-radius: 5px;' src='" + data.brand_logo + "'/>");
+                if(data.brand_logo){
+                    $row.find('td:eq(4)').html("<img  style='width:80px;border-radius: 5px;' src='" + data.brand_logo + "'/>");
+                } else{
+                    $row.find('td:eq(4)').html("暂无logo");
+                }
+
                 //最后一列加入内容
-                $row.find('td:last').html("<a title='编辑' href='javascript:void(0);' onclick=member_edit('编辑','member-add.html','4','','510') class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6df;</i></a> <a title='删除' href='javascript:void(0);' onclick=member_del(this,'1') class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6e2;</i></a>");
+                $row.find('td:last').html("<a title='编辑' href='javascript:void(0);' onclick=brand_edit('"+data.id+"') class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6df;</i></a> <a title='删除' href='javascript:void(0);' onclick=brandDelOne('"+data.id+"') class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6e2;</i></a>");
 
             },
 
@@ -123,21 +128,26 @@
     });
 
     /*品牌-添加start*/
-    function member_add(title, url, w, h) {
+    function brand_add() {
         var title = "添加品牌";//弹窗标题
         var url = "{{ url('admin/brand/create') }}";//弹窗的地址
         var h = "510";//弹窗高度
+        var w = "800";//弹窗宽度
         layer_show(title, url, w, h);
     }
     /*品牌-添加end*/
 
     /*品牌-编辑start*/
-    function member_edit(title, url, id, w, h) {
+    function brand_edit(id) {
+        var title = "修改品牌";//弹窗标题
+        var url = "{{ url('admin/brand') }}/"+id+"/edit";//弹窗的地址
+        var h = "510";//弹窗高度
+        var w = "800";//弹窗宽度
         layer_show(title, url, w, h);
     }
     /*品牌-编辑end*/
 
-    /*品牌-删除start*/
+    /*品牌批量-删除start*/
     function brandDel() {
         layer.confirm('确认要删除吗？', function (index) {
             //获取选中的数据的id
@@ -171,7 +181,31 @@
             }
         });
     }
-    /*品牌-删除start*/
+    /*品牌批量-删除start*/
+
+    /*删除单个品牌start*/
+    function brandDelOne(id){
+        layer.confirm('do delete?',function(i){
+            $.ajax({
+                'url':"{{ url('admin/brand') }}/"+id,
+                'type':'delete',
+                'dataType':'json',
+                'data':{'id':id,'_token':"{{ csrf_token() }}"},
+                'success':function(res){
+                    if (res.status) {
+                        layer.msg('delete success!', {icon: 1, time: 1000});
+                        $table.api().ajax.reload();//刷新表格对象 $table是上面的table对象,往上找能够发现为自定义
+                        layer.close(i);
+                    } else {
+                        layer.msg('delete failed!', {icon: 2, time: 1000});
+                        layer.close(i);
+                    }
+                }
+            });
+        });
+
+    }
+    /*删除单个品牌end*/
 
     /*品牌-搜索start*/
     $('#searchBrand').click(function () {
