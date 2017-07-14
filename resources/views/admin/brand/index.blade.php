@@ -107,6 +107,7 @@
                     //*--附加搜索条件end--*//
                 },
             },
+            //columns是自动完成的,ajax返回的信息会被自动填充到表格中去
             'columns': [
                 {'data': 'a', 'defaultContent': ""},
                 {'data': 'id'},

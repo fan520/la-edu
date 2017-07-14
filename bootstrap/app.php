@@ -25,6 +25,11 @@ $app = new Illuminate\Foundation\Application(
 | incoming requests to this application from both the web and CLI.
 |
 */
+//一如第三方的调试类
+//if (env('APP_DEBUG')) {
+//
+//    $app->register(Barryvdh\Debugbar\LumenServiceProvider::class);
+//}
 
 $app->singleton(
     Illuminate\Contracts\Http\Kernel::class,

@@ -199,8 +199,11 @@ class BrandController extends Controller
 
                 //删除数据库中的logo路径,更新新的图片信息
                 $save = Brand::find($request->get('brand_id'));
-                $save->brand_logo = "/admin/uploads/brand/" . $datapath . '/' . $filename;
-                $save->save();
+                if($save){
+                    $save->brand_logo = "/admin/uploads/brand/" . $datapath . '/' . $filename;
+                    $save->save();
+                }
+
 
                 //成功之后组装返回数据
                 $data = [

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Admin\Users;
+use App\Models\Admin\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -14,22 +14,39 @@ class LoginController extends Controller
         if($request->isMethod('get')){
             return view('admin.login.login');
         }elseif($request->isMethod('post')){
-            $users = new Users();
-            $input = $request->except('_token');//除了_token字段的数据
-            $remember = $request->has('online');//是否存在online字段,存在返回true,否则返回false
-            $validator = $users->Validator($input);
-            if(!$validator->fails()){
-                //执行登陆判断,登陆成功返回1并记录登陆信息,登陆失败返回0
-                $login = Auth::attempt(['name'=>$request->get('name'),'password'=>$request->get('password')],$remember);
-                if($login){
-                    return redirect('admin/index');
-                }else{
-                    return back()->withErrors('用户名或者密码错误!');
-                }
-            }else{
-                return back()->withErrors($validator);
+            //验证提交的数据
+            $this->validate($request, [
+                'username' => 'required|min:4|max:20',
+                'password' => 'required|min:5|max:32',
+                'captcha' => 'required|size:5|captcha',
+            ]);
+
+            //获取数据
+            $input = $request -> only(['username','password']);
+
+            //尝试去验证,并且实现记住我功能
+            $result = Auth::guard('admin') -> attempt($input,$request->get('online'));
+
+            //判断登陆结果
+            if($result){
+                return redirect('admin/index');
+            } else {
+                return back()->withErrors(['loginError' => '用户名或者密码错误!']);
             }
         }
-
     }
+
+    /* @fun: 退出
+     * @author: fanzhiyi
+     * @date: 2017/7/14 14:15
+     * @param:
+     * @return:
+     */
+    public function loginOut()
+    {
+        Auth::guard('admin')->logout();
+    }
+
+
+
 }

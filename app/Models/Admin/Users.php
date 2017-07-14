@@ -30,14 +30,14 @@ class Users extends Model
         ];
 
         //验证错误提示信息
-        $mess = [
-            'name.required' => '用户名不能为空!',
-            'password.required' => '密码不能为空!',
-            'captcha.required' => '验证码不能为空!',
-            'captcha.captcha' => '验证码有误!',
-        ];
+//        $mess = [
+//            'name.required' => '用户名不能为空!',
+//            'password.required' => '密码不能为空!',
+//            'captcha.required' => '验证码不能为空!',
+//            'captcha.captcha' => '验证码有误!',
+//        ];
 
         //执行验证
-        return Validator::make($input,$rules,$mess);
+        return Validator::make($input,$rules);
     }
 }

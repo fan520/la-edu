@@ -36,6 +36,12 @@ return [
     */
 
     'guards' => [
+        //自定义admin验证
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admin',
+        ],
+
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
@@ -65,15 +71,21 @@ return [
     */
 
     'providers' => [
-        'users' => [
+        //自定义
+        'admin' => [
             'driver' => 'eloquent',
-            'model' => App\User::class,
+            'model' => App\Models\Admin\Admin::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+//        'users' => [
+//            'driver' => 'eloquent',
+//            'model' => App\User::class,
+//        ],
+
+         'users' => [
+             'driver' => 'database',
+             'table' => 'users',
+         ],
     ],
 
     /*

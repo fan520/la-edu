@@ -64,7 +64,7 @@ return [
     |
     */
 
-    'timezone' => 'PRC',//lavarel默认时区为UTC,这里可以做修改
+    'timezone' => 'Asia/Shanghai',//lavarel默认时区为UTC,这里可以做修改
 
     /*
     |--------------------------------------------------------------------------
@@ -77,7 +77,7 @@ return [
     |
     */
 
-    'locale' => 'en',
+    'locale' => 'zh-CN',
 
     /*
     |--------------------------------------------------------------------------
@@ -178,6 +178,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        //自定义下载的调试类
+        //Barryvdh\Debugbar\ServiceProvider::class,
 
     ],
 
@@ -229,6 +231,8 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         //引入第三方验证码类
         'Captcha' => Mews\Captcha\Facades\Captcha::class,
+        //自定义下载的调试类
+        //'Debugbar' => Barryvdh\Debugbar\Facade::class,
 
     ],
 

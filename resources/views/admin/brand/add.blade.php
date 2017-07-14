@@ -156,6 +156,7 @@
 
         // 文件上传成功，给item添加成功class, 用样式标记上传成功。
         uploader.on( 'uploadSuccess', function( file ,res) {
+            console.log(res);
             if(res.status==1){//上传成功!
                 $('#brand_logo').val(res.url);
 

@@ -46,7 +46,7 @@
             <div class="row cl">
                 <label class="form-label col-xs-3"><i class="Hui-iconfont">&#xe60d;</i></label>
                 <div class="formControls col-xs-8">
-                    <input id="" name="name" type="text" class="input-text size-L">
+                    <input id="" name="username" type="text" class="input-text size-L">
                 </div>
             </div>
             <div class="row cl">
@@ -58,8 +58,9 @@
             <div class="row cl">
                 <div class="formControls col-xs-8 col-xs-offset-3">
                     <input class="input-text size-L" type="text" name="captcha" placeholder="验证码" style="width:150px;">
-                    <img src="{{ Captcha::src() }}" onclick="this.src=this.src+'?time='+Math.random()" id="mycaptcha">
-                    <a onclick="changeimg()" href="javascript:void(0);">看不清，换一张</a></div>
+                    <img id = "mycaptcha" src="{{ Captcha_src() }}" onclick="this.src=this.src+'?time='+Math.random()" id="mycaptcha">
+                    <a onclick="changeimg()" href="javascript:void(0);">换一张</a></div>
+
             </div>
             <div class="row cl">
                 <div class="formControls col-xs-8 col-xs-offset-3">
@@ -83,6 +84,15 @@
 <script type="text/javascript" src="{{ asset('admin/lib/jquery/1.9.1/jquery.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('admin/static/h-ui/js/H-ui.min.js') }}"></script>
 <!--此乃百度统计代码，请自行删除-->
+//点击刷新验证码
+<script type="text/javascript">
+    function changeimg(){
+        var mysrc = $('#mycaptcha').prop('src');
+        $('#mycaptcha').prop('src',mysrc+Math.random())
+    }
+</script>
+
+
 <script>
     var _hmt = _hmt || [];
     (function () {
