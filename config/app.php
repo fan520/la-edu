@@ -180,6 +180,8 @@ return [
         App\Providers\RouteServiceProvider::class,
         //自定义下载的调试类
         //Barryvdh\Debugbar\ServiceProvider::class,
+        //注册input类
+
 
     ],
 
@@ -233,6 +235,7 @@ return [
         'Captcha' => Mews\Captcha\Facades\Captcha::class,
         //自定义下载的调试类
         //'Debugbar' => Barryvdh\Debugbar\Facade::class,
+
 
     ],
 
