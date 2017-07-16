@@ -75,10 +75,9 @@
 		<label class="form-label col-xs-4 col-sm-3">角色：</label>
 		<div class="formControls col-xs-8 col-sm-9"> <span class="select-box" style="width:150px;">
 			<select class="select" name="role_id" size="1">
-				<option value="0">超级管理员</option>
-				<option value="1">总编</option>
-				<option value="2">栏目主辑</option>
-				<option value="3">栏目编辑</option>
+				@foreach($role as $v)
+					<option value="{{ $v->id }}">{{ $v->role_name }}</option>
+				@endforeach
 			</select>
 			</span> </div>
 	</div>

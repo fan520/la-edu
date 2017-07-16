@@ -17,7 +17,10 @@ class CreateRoleTable extends Migration
         Schema::create('role',function($table){
             $table -> increments('id');
             $table -> string('role_name',20)->notnull()->unique()->comment('角色名称');
-            $table -> string('auth_ids')->comment('');
+            $table -> string('auth_ids')->comment('权限id集合');
+            $table -> string('auth_ac')->comment('对应权限控制器和方法的集合');
+            $table -> timestamps();
+            $table -> SoftDeletes();
         });
     }
 
@@ -28,6 +31,7 @@ class CreateRoleTable extends Migration
      */
     public function down()
     {
-        //
+        //删除表
+        Schema::dropIfExists('role');
     }
 }

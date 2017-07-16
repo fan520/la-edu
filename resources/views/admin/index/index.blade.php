@@ -43,7 +43,7 @@
 			</nav>
 			<nav id="Hui-userbar" class="nav navbar-nav navbar-userbar hidden-xs">
 				<ul class="cl">
-					<li>超级管理员</li>
+					<li>{{ \Illuminate\Support\Facades\Auth::guard('admin')->user()->admin_role->role_name }}:{{ \Illuminate\Support\Facades\Auth::guard('admin')->user()->username }}</li>
 					<li class="dropDown dropDown_hover">
 						<a href="#" class="dropDown_A"> <i class="Hui-iconfont">&#xe6d5;</i></a>
 						<ul class="dropDown-menu menu radius box-shadow">
@@ -123,8 +123,8 @@
 			<dt><i class="Hui-iconfont">&#xe62d;</i> 管理员管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 			<dd>
 				<ul>
-					<li><a data-href="admin-role.html" data-title="角色管理" href="javascript:void(0)">角色管理</a></li>
-					<li><a data-href="admin-permission.html" data-title="权限管理" href="javascript:void(0)">权限管理</a></li>
+					<li><a data-href="{{ url('admin/role') }}" data-title="角色管理" href="javascript:void(0)">角色管理</a></li>
+					<li><a data-href="{{ url('admin/auth') }}" data-title="权限管理" href="javascript:void(0)">权限管理</a></li>
 					<li><a data-href="{{ url('admin/manage') }}" data-title="管理员列表" href="javascript:void(0)">管理员列表</a></li>
 				</ul>
 			</dd>

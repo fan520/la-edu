@@ -31,28 +31,34 @@ Route::group(['middleware' => 'auth:admin','namespace' => 'Admin','prefix' => 'a
     //后台欢迎页面
     Route::get('welcome','AdminController@welcome');
 
-    //*--管理员RBACstart--*//
-    //管理员资源路由
-    Route::resource('manage','ManageController');
-    //管理员logo路由
-    Route::post('manage/logo','ManageController@logo');
-    //获取管理员列表数据
-    Route::post('manage/getList','ManageController@getList');
-    //批量删除管理员
-    Route::post('manage/batchDel','ManageController@batchDel');
 
+    //*--管理员RBACstart--*//
+    Route::resource('manage','ManageController');//管理员资源路由
+    Route::post('manage/getList','ManageController@getList');//获取管理员列表数据
+    Route::post('manage/batchDel','ManageController@batchDel');//批量删除管理员
     //*--管理员end--*//
 
-    //*--品牌start--*//
-    //品牌资源路由
-    Route::resource('brand','BrandController');
-    //品牌logo路由
-    Route::post('brand/logo','BrandController@logo');
-    //获取品牌列表数据
-    Route::post('brand/getList','BrandController@getList');
-    //批量删除品牌
-    Route::post('brand/batchDel','BrandController@batchDel');
 
+    //*--角色RBACstart--*//
+    Route::resource('role','RoleController');//角色资源路由
+    Route::post('role/getList','RoleController@getList');//获取角色列表数据
+    Route::post('role/batchDel','RoleController@batchDel');//批量删除角色
+    Route::get('role/allocate_auth/{id}','RoleController@allocate_auth');//角色权限分配
+    //*--角色end--*//
+
+
+    //*--权限RBACstart--*//
+    Route::resource('auth','AuthController');//权限资源路由
+    Route::post('auth/getList','AuthController@getList');//获取权限列表数据
+    Route::post('auth/batchDel','AuthController@batchDel');//批量删除权限
+    //*--权限end--*//
+
+
+    //*--品牌start--*//
+    Route::resource('brand','BrandController');//品牌资源路由
+    Route::post('brand/logo','BrandController@logo');//品牌logo路由
+    Route::post('brand/getList','BrandController@getList');//获取品牌列表数据
+    Route::post('brand/batchDel','BrandController@batchDel');//批量删除品牌
     //*--品牌end--*//
 
 });

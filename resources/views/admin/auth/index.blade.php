@@ -8,11 +8,11 @@
           content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
     <meta http-equiv="Cache-Control" content="no-siteapp"/>
     @include('admin.common.header')
-    <title>管理员管理</title>
+    <title>权限管理</title>
 </head>
 <body>
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 管理员管理 <span
-            class="c-gray en">&gt;</span> 管理员列表 <a class="btn btn-success radius r"
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 权限管理 <span
+            class="c-gray en">&gt;</span> 权限列表 <a class="btn btn-success radius r"
                                                   style="line-height:1.6em;margin-top:3px"
                                                   href="javascript:location.replace(location.href);" title="刷新"><i
                 class="Hui-iconfont">&#xe68f;</i></a></nav>
@@ -23,15 +23,15 @@
         -
         <input type="text" onfocus="WdatePicker({ minDate:'#F{$dp.$D(\'datemin\')}',maxDate:'%y-%M-%d' })" id="datemax"
                class="input-text Wdate" style="width:120px;">
-        <input type="text" class="input-text" style="width:250px" placeholder="输入管理员名称..." id="search_manage_name"
+        <input type="text" class="input-text" style="width:250px" placeholder="输入权限名称..." id="search_manage_name"
                name="">
         <button type="submit" class="btn btn-success radius" id="searchmanage" name=""><i class="Hui-iconfont">
-                &#xe665;</i> 搜管理员
+                &#xe665;</i> 搜权限
         </button>
     </div>
     <div class="cl pd-5 bg-1 bk-gray mt-20"><span class="l"><a href="javascript:;" onclick="manageDel()"
                                                                class="btn btn-danger radius"><i class="Hui-iconfont">&#xe6e2;</i> 批量删除</a> <a
-                    href="javascript:;" onclick="manage_add()" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加管理员</a></span>
+                    href="javascript:;" onclick="manage_add()" class="btn btn-primary radius"><i class="Hui-iconfont">&#xe600;</i> 添加权限</a></span>
     </div>
     <div class="mt-20">
         <table class="table table-border table-bordered table-hover table-bg table-sort">
@@ -39,13 +39,11 @@
             <tr class="text-c">
                 <th width="5%"><input type="checkbox" name="" value=""></th>
                 <th width="5%">ID</th>
-                <th width="10%">管理员</th>
-                <th width="5%">性别</th>
-                <th width="15%">手机号</th>
-                <th width="15%">邮箱</th>
-                <th width="10%">角色</th>
-                <th width="15%">添加时间</th>
-                <th width="10%">状态</th>
+                <th width="10%">权限</th>
+                <th width="10%">控制器</th>
+                <th width="15%">方法</th>
+                <th width="15%">上级权限</th>
+                <th width="15%">菜单</th>
                 <th width="10%">操作</th>
             </tr>
             </thead>
@@ -70,34 +68,37 @@
                 //第一列加入复选框
                 $row.find('td:eq(0)').html("<input type='checkbox' name='id[]' value='" + data.id + "'/>");
 
-                //第三列改成性别
-                if(data.gender==1){
-                    $row.find('td:eq(3)').html("男");
+//                //第三列改成性别
+//                if(data.gender==1){
+//                    $row.find('td:eq(3)').html("男");
+//                }
+//                if(data.gender==2){
+//                    $row.find('td:eq(3)').html("女");
+//                }
+//                if(data.gender==3){
+//                    $row.find('td:eq(3)').html("保密");
+//                }
+//
+//                //改变权限显示
+//
+//
+                //第6列改成状态
+                if (data.is_nav == 1) {
+                    $row.find('td:eq(6)').html("<i class='Hui-iconfont'>&#xe6a7;</i>");
+                } else {
+                    $row.find('td:eq(6)').html("<i class='Hui-iconfont'>&#xe6a6;</i>");
                 }
-                if(data.gender==2){
-                    $row.find('td:eq(3)').html("女");
-                }
-                if(data.gender==3){
-                    $row.find('td:eq(3)').html("保密");
-                }
-
-                //改变角色显示
-
-
-                //第8列改成状态
-                if(data.status==1){
-                    $row.find('td:eq(8)').html("启用");
-                }
-                if(data.status==2){
-                    $row.find('td:eq(8)').html("禁用");
-                }
+//                if(data.status==2){
+//                    $row.find('td:eq(8)').html("禁用");
+//                }
 
                 //最后一列加入内容
-                $row.find('td:last').html("<a title='编辑' href='javascript:void(0);' onclick=manage_edit('"+data.id+"') class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6df;</i></a> <a title='删除' href='javascript:void(0);' onclick=manageDelOne('"+data.id+"') class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6e2;</i></a>");
+                $row.find('td:last').html("<a title='编辑' href='javascript:void(0);' onclick=manage_edit('" + data.id + "') class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6df;</i></a> " +
+                    "<a title='删除' href='javascript:void(0);' onclick=manageDelOne('" + data.id + "') class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6e2;</i></a>");
 
             },
             'ajax': {
-                'url': "{{ url('admin/manage/getList') }}",
+                'url': "{{ url('admin/auth/getList') }}",
                 'type': "post",
                 'data': function (data) {
                     //每页显示的数据量
@@ -112,7 +113,7 @@
                     data.updated_start = $('#datemin').val();
                     //结束日期
                     data.updated_end = $('#datemax').val();
-                    //管理员名称
+                    //权限名称
                     data.manage_name = $('#search_manage_name').val();
 //                    console.log(data);
                     //*--附加搜索条件end--*//
@@ -122,45 +123,43 @@
             'columns': [
                 {'data': 'a', 'defaultContent': ""},
                 {'data': 'id'},
-                {'data': 'username'},
-                {'data': 'gender'},
-                {'data': 'mobile'},
-                {'data': 'email'},
-                {'data': 'role_id'},
-                {'data': 'created_at'},
-                {'data': 'status'},
+                {'data': 'auth_name'},
+                {'data': 'controller'},
+                {'data': 'action'},
+                {'data': 'parent_name'},
+                {'data': 'is_nav'},
                 {'data': 'b', 'defaultContent': 'id'},
             ],
             //"stateSave": true,//储存分页位置，每页显示的长度，过滤后的结果和排序
             "aoColumnDefs": [
                 //{"bVisible": false, "aTargets": [ 3 ]} //控制列的隐藏显示
-                {"orderable": false, "aTargets": [0, 9]}// 制定列不参与排序
+                {"orderable": false, "aTargets": [0, 7]}// 制定列不参与排序
             ]
         });
         ////--表格配置end--
     });
 
-    /*管理员-添加start*/
+    /*权限-添加start*/
     function manage_add() {
-        var title = "添加管理员";//弹窗标题
-        var url = "{{ url('admin/manage/create') }}";//弹窗的地址
+        var title = "添加权限";//弹窗标题
+        var url = "{{ url('admin/auth/create') }}";//弹窗的地址
         var h = "510";//弹窗高度
         var w = "800";//弹窗宽度
         layer_show(title, url, w, h);
     }
-    /*管理员-添加end*/
+    /*权限-添加end*/
 
-    /*管理员-编辑start*/
+    /*权限-编辑start*/
     function manage_edit(id) {
-        var title = "修改管理员";//弹窗标题
-        var url = "{{ url('admin/manage') }}/"+id+"/edit";//弹窗的地址
+        var title = "修改权限";//弹窗标题
+        var url = "{{ url('admin/auth') }}/" + id + "/edit";//弹窗的地址
         var h = "500";//弹窗高度
         var w = "800";//弹窗宽度
         layer_show(title, url, w, h);
     }
-    /*管理员-编辑end*/
+    /*权限-编辑end*/
 
-    /*管理员批量-删除start*/
+    /*权限批量-删除start*/
     function manageDel() {
         layer.confirm('确认要删除吗？', function (index) {
             //获取选中的数据的id
@@ -170,12 +169,12 @@
             });
 
             //判断是否选中
-            if(ids.length < 1){
+            if (ids.length < 1) {
                 layer.alert('请至少选中一条数据!');
             } else {
                 $.ajax({
                     type: 'post',
-                    url: "{{ url('admin/manage/batchDel') }}",
+                    url: "{{ url('admin/auth/batchDel') }}",
                     data: {'ids': ids, '_token': "{{ csrf_token() }}"},
                     dataType: 'json',
                     success: function (data) {
@@ -195,17 +194,17 @@
             }
         });
     }
-    /*管理员批量-删除start*/
+    /*权限批量-删除start*/
 
-    /*删除单个管理员start*/
-    function manageDelOne(id){
-        layer.confirm('do delete?',function(i){
+    /*删除单个权限start*/
+    function manageDelOne(id) {
+        layer.confirm('do delete?', function (i) {
             $.ajax({
-                'url':"{{ url('admin/manage') }}/"+id,
-                'type':'delete',
-                'dataType':'json',
-                'data':{'id':id,'_token':"{{ csrf_token() }}"},
-                'success':function(res){
+                'url': "{{ url('admin/auth') }}/" + id,
+                'type': 'delete',
+                'dataType': 'json',
+                'data': {'id': id, '_token': "{{ csrf_token() }}"},
+                'success': function (res) {
                     if (res.status) {
                         layer.msg('delete success!', {icon: 1, time: 1000});
                         $table.api().ajax.reload();//刷新表格对象 $table是上面的table对象,往上找能够发现为自定义
@@ -219,13 +218,13 @@
         });
 
     }
-    /*删除单个管理员end*/
+    /*删除单个权限end*/
 
-    /*管理员-搜索start*/
+    /*权限-搜索start*/
     $('#searchmanage').click(function () {
         $table.api().ajax.reload();//刷新表格对象 $table是上面的table对象,往上找能够发现为自定义
     });
-    /*管理员-搜索start*/
+    /*权限-搜索start*/
 </script>
 </body>
 </html>
