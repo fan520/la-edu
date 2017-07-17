@@ -34,15 +34,15 @@
                             <dl class="cl permission-list2">
                                 <dt>
                                     <label class="">
-                                        <input type="checkbox" value="{{ $p->id }}" name="auth_ids[]">
+                                        <input type="checkbox" value="{{ $p->id }}" name="auth_ids[]" @if(in_array($p->id,$role)) checked @endif>
                                         <b>{{ $p->auth_name }}</b></label>
                                 </dt>
                                 <dd>
                                     @foreach($c_role as $c)
                                         @if($c->pid === $p->id )
-                                            <label class="">
+                                            <label>
                                                 <input type="checkbox" value="{{ $c->id }}"
-                                                       name="auth_ids[]">{{ $c->auth_name }}
+                                                       name="auth_ids[]" @if(in_array($c->id,$role)) checked @endif>{{ $c->auth_name }}
                                             </label>
                                         @endif
                                     @endforeach

@@ -43,7 +43,7 @@
 			</nav>
 			<nav id="Hui-userbar" class="nav navbar-nav navbar-userbar hidden-xs">
 				<ul class="cl">
-					<li>{{ \Illuminate\Support\Facades\Auth::guard('admin')->user()->admin_role->role_name }}:{{ \Illuminate\Support\Facades\Auth::guard('admin')->user()->username }}</li>
+					<li>{{ \Illuminate\Support\Facades\Auth::guard('admin')->user()->username }}</li>
 					<li class="dropDown dropDown_hover">
 						<a href="#" class="dropDown_A"> <i class="Hui-iconfont">&#xe6d5;</i></a>
 						<ul class="dropDown-menu menu radius box-shadow">

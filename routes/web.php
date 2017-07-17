@@ -40,9 +40,11 @@ Route::group(['middleware' => 'auth:admin','namespace' => 'Admin','prefix' => 'a
 
 
     //*--角色RBACstart--*//
-    Route::resource('role','RoleController');//角色资源路由
-    Route::post('role/getList','RoleController@getList');//获取角色列表数据
-    Route::post('role/batchDel','RoleController@batchDel');//批量删除角色
+    //Route::resource('role','RoleController');//角色资源路由
+    Route::match(['get','post'],'role/add','RoleController@add');//添加角色(增)
+    Route::post('role/del','RoleController@del');//批量删除角色(删)
+    Route::match(['get','post'],'role/edit/{id}','RoleController@edit');//编辑角色(改)
+    Route::match(['get','post'],'role/index','RoleController@index');//角色列表和查询角色(查)
     Route::get('role/allocate_auth/{id}','RoleController@allocate_auth');//角色权限分配
     //*--角色end--*//
 

@@ -66,36 +66,13 @@
                 //第一列加入复选框
                 $row.find('td:eq(0)').html("<input type='checkbox' name='id[]' value='" + data.id + "'/>");
 
-//                //第三列改成性别
-//                if(data.gender==1){
-//                    $row.find('td:eq(3)').html("男");
-//                }
-//                if(data.gender==2){
-//                    $row.find('td:eq(3)').html("女");
-//                }
-//                if(data.gender==3){
-//                    $row.find('td:eq(3)').html("保密");
-//                }
-//
-//                //改变角色显示
-//
-//
-//                //第8列改成状态
-//                if(data.status==1){
-//                    $row.find('td:eq(8)').html("启用");
-//                }
-//                if(data.status==2){
-//                    $row.find('td:eq(8)').html("禁用");
-//                }
-
                 //最后一列加入内容
                 $row.find('td:last').html("<a title='编辑' href='javascript:void(0);' onclick=manage_edit('"+data.id+"') class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6df;</i></a> " +
-                    "<a title='删除' href='javascript:void(0);' onclick=manageDelOne('"+data.id+"') class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6e2;</i></a>" +
-                    "<a title='分配权限' href='javascript:void(0);' onclick=allocate_auth('"+data.id+"') class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe63c;</i></a>");
+                    "<a title='删除' href='javascript:void(0);' onclick=manageDelOne('"+data.id+"') class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6e2;</i></a>" );
 
             },
             'ajax': {
-                'url': "{{ url('admin/role/getList') }}",
+                'url': "{{ url('admin/role/index') }}",
                 'type': "post",
                 'data': function (data) {
                     //每页显示的数据量
@@ -137,7 +114,7 @@
     /*角色-添加start*/
     function manage_add() {
         var title = "添加角色";//弹窗标题
-        var url = "{{ url('admin/role/create') }}";//弹窗的地址
+        var url = "{{ url('admin/role/add') }}";//弹窗的地址
         var h = "510";//弹窗高度
         var w = "800";//弹窗宽度
         layer_show(title, url, w, h);
@@ -147,7 +124,7 @@
     /*角色-编辑start*/
     function manage_edit(id) {
         var title = "修改角色";//弹窗标题
-        var url = "{{ url('admin/role') }}/"+id+"/edit";//弹窗的地址
+        var url = "{{ url('admin/role/edit') }}/"+id;//弹窗的地址
         var h = "500";//弹窗高度
         var w = "800";//弹窗宽度
         layer_show(title, url, w, h);
@@ -166,7 +143,7 @@
 
     /*角色批量-删除start*/
     function manageDel() {
-        layer.confirm('确认要删除吗？', function (index) {
+        layer.confirm('do delete?', function (index) {
             //获取选中的数据的id
             var ids = [];
             $('input:checked').each(function () {
@@ -179,8 +156,8 @@
             } else {
                 $.ajax({
                     type: 'post',
-                    url: "{{ url('admin/manage/batchDel') }}",
-                    data: {'ids': ids, '_token': "{{ csrf_token() }}"},
+                    url: "{{ url('admin/role/del') }}",
+                    data: {'id': ids, '_token': "{{ csrf_token() }}"},
                     dataType: 'json',
                     success: function (data) {
                         if (data.status) {
@@ -205,8 +182,8 @@
     function manageDelOne(id){
         layer.confirm('do delete?',function(i){
             $.ajax({
-                'url':"{{ url('admin/manage') }}/"+id,
-                'type':'delete',
+                'url':"{{ url('admin/role/del') }}",
+                'type':'post',
                 'dataType':'json',
                 'data':{'id':id,'_token':"{{ csrf_token() }}"},
                 'success':function(res){

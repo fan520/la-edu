@@ -11,7 +11,7 @@ class Role extends Model
     protected $table = 'Role';
 
     //禁用自动添加时间戳(更新时间和修改时间)
-    public $timestamps = false;
+    //public $timestamps = false;
 
     //白名单
     protected $fillable = ['role_name','auth_ids','auth_ac'];
