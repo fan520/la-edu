@@ -13,8 +13,8 @@
 <body>
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 专业分类管理 <span
             class="c-gray en">&gt;</span> 专业分类列表 <a class="btn btn-success radius r"
-                                                  style="line-height:1.6em;margin-top:3px"
-                                                  href="javascript:location.replace(location.href);" title="刷新"><i
+                                                    style="line-height:1.6em;margin-top:3px"
+                                                    href="javascript:location.replace(location.href);" title="刷新"><i
                 class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container">
     <div class="text-c"> 日期范围：
@@ -69,14 +69,23 @@
                 var $row = $(row);//当前行对象
                 //第一列加入复选框
                 $row.find('td:eq(0)').html("<input type='checkbox' name='id[]' value='" + data.id + "'/>");
-//                if(data.brand_logo){
-//                    $row.find('td:eq(4)').html("<img  style='width:80px;border-radius: 5px;' src='" + data.brand_logo + "'/>");
-//                } else{
-//                    $row.find('td:eq(4)').html("暂无logo");
-//                }
+
+                //修改第4列的所属分类
+                if (data.parent_name) {
+                    $row.find('td:eq(4)').html(data.parent_name);
+                } else {
+                    $row.find('td:eq(4)').html('');
+                }
+
+                //修改第7列的状态信息
+                if (data.status == 1) {
+                    $row.find('td:eq(7)').html('启用');
+                } else {
+                    $row.find('td:eq(7)').html('禁用');
+                }
 
                 //最后一列加入内容
-                $row.find('td:last').html("<a title='编辑' href='javascript:void(0);' onclick=brand_edit('"+data.id+"') class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6df;</i></a> <a title='删除' href='javascript:void(0);' onclick=brandDelOne('"+data.id+"') class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6e2;</i></a>");
+                $row.find('td:last').html("<a title='编辑' href='javascript:void(0);' onclick=brand_edit('" + data.id + "') class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6df;</i></a> <a title='删除' href='javascript:void(0);' onclick=brandDelOne('" + data.id + "') class='ml-5' style='text-decoration:none'><i class='Hui-iconfont'>&#xe6e2;</i></a>");
 
             },
 
@@ -143,7 +152,7 @@
     /*专业分类-编辑start*/
     function brand_edit(id) {
         var title = "修改专业分类";//弹窗标题
-        var url = "{{ url('admin/protype/edit') }}/"+id;//弹窗的地址
+        var url = "{{ url('admin/protype/edit') }}/" + id;//弹窗的地址
         var h = "510";//弹窗高度
         var w = "800";//弹窗宽度
         layer_show(title, url, w, h);
@@ -159,7 +168,7 @@
                 ids.push($(this).val());
             });
             //判断是否选中
-            if(ids.length < 1){
+            if (ids.length < 1) {
                 layer.alert('请至少选中一条数据!');
             } else {
                 $.ajax({
@@ -168,7 +177,7 @@
                     data: {'id': ids, '_token': "{{ csrf_token() }}"},
                     dataType: 'json',
                     success: function (data) {
-                        if (data.status===1) {
+                        if (data.status === 1) {
                             layer.msg('已删除!', {icon: 1, time: 1000});
                             $table.api().ajax.reload();//刷新表格对象 $table是上面的table对象,往上找能够发现为自定义
                             layer.close(index);
@@ -187,15 +196,15 @@
     /*专业分类批量-删除start*/
 
     /*删除单个专业分类start*/
-    function brandDelOne(id){
-        layer.confirm('do delete?',function(i){
+    function brandDelOne(id) {
+        layer.confirm('do delete?', function (i) {
             $.ajax({
-                'url':"{{ url('admin/protype/del') }}",
-                'type':'post',
-                'dataType':'json',
-                'data':{'id':id,'_token':"{{ csrf_token() }}"},
-                'success':function(res){
-                    if (res.status===1) {
+                'url': "{{ url('admin/protype/del') }}",
+                'type': 'post',
+                'dataType': 'json',
+                'data': {'id': id, '_token': "{{ csrf_token() }}"},
+                'success': function (res) {
+                    if (res.status === 1) {
                         layer.msg('delete success!', {icon: 1, time: 1000});
                         $table.api().ajax.reload();//刷新表格对象 $table是上面的table对象,往上找能够发现为自定义
                         layer.close(i);

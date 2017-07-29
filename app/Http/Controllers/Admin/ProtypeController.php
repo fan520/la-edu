@@ -17,11 +17,11 @@ class ProtypeController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->isMethod('get')){
+        if ($request->isMethod('get')) {
             return view('admin.Protype.index');
         }
 
-        if($request->isMethod('post')){
+        if ($request->isMethod('post')) {
             $pagesize = $request->get('pageSize');
             $pagestart = $request->get('page') - 1;
             $offset = $pagestart * $pagesize;
@@ -41,11 +41,21 @@ class ProtypeController extends Controller
             }
             $data = $query->offset($offset)->limit($pagesize)->get()->toArray();
 
+            $datas = [];
+            //添加父级分类的名称
+            foreach($data as $k => $v){
+                $parent_name  = DB::table('protype')->where('id',$v['pid'])->first();
+                if($parent_name){
+                    $v['parent_name'] = $parent_name->protype_name;
+                }
+                $datas[$k] = $v;
+            }
+
             return [
                 'draw' => $request->get('draw'),
                 'recordsFiltered' => $query->count(),//被检索后的数量
                 'recordsTotal' => $query->count(),//总记录数
-                'data' => $data//返回的数据
+                'data' => $datas//返回的数据
             ];
         }
     }
@@ -58,11 +68,16 @@ class ProtypeController extends Controller
      */
     public function add(Request $request)
     {
-        if($request->isMethod('get')){
-            return view('admin/Protype/add');
+        if ($request->isMethod('get')) {
+            //取出分类数据
+            $data = Protype::get()->toarray();
+
+            //无限极分类
+            $data = getTree($data);
+            return view('admin/Protype/add')->with(['data' => $data]);
         }
 
-        if($request->isMethod('post')){
+        if ($request->isMethod('post')) {
             //数据验证
             $this->validate($request, [
                 'protype_name' => 'required|unique:protype,protype_name|max:255',
@@ -133,112 +148,49 @@ class ProtypeController extends Controller
         }
     }
 
-    /*
-      * @fun 上传logo
-      * @author fanzhiyi
-      * @date 2017/6/22 21:00
-      * @param
-      * @return
-     */
-    public function logo(Request $request)
-    {
-
-        //接受上传图片信息
-        $file = $request->file('file');
-
-        //验证合法性
-        if ($file->isValid()) {
-//            $originalName = $file->getClientOriginalName(); // 文件原名
-//            $type = $file->getClientMimeType();     // image/jpeg
-            $ext = $file->getClientOriginalExtension();     // 扩展名
-            $realPath = $file->getRealPath();   //临时文件的绝对路径
-            $datapath = date('Y-m-d', time());//每日为一个文件夹
-            $Path = public_path() . "/admin/uploads/Protype/";//上传路径
-
-            //文件夹不存在就创建
-            if (!file_exists($Path)) {
-                mkdir($Path);
-            }
-            if (!file_exists($Path . $datapath)) {
-                mkdir($Path . $datapath);
-            }
-
-            $filename = time() . '_' . uniqid() . '.' . $ext;//文件名
-            //执行上传
-            $res = move_uploaded_file($realPath, $Path . $datapath . '/' . $filename);
-            //判断上传结果并返回信息
-            if ($res) {
-                //判断是否有旧图片,有的话就删除
-                $old_pic = public_path().$request->get('old_logo');
-                if(!empty($request->get('old_logo')) && file_exists($old_pic)){
-                    unlink($old_pic);
-                }
-
-                //删除数据库中的logo路径,更新新的图片信息
-                $save = Protype::find($request->get('Protype_id'));
-                if($save){
-                    $save->Protype_logo = "/admin/uploads/Protype/" . $datapath . '/' . $filename;
-                    $save->save();
-                }
-
-
-                //成功之后组装返回数据
-                $data = [
-                    'status' => '1',
-                    'msg' => '图片上传成功!',
-                    'url' => "/admin/uploads/Protype/" . $datapath . '/' . $filename
-                ];
-            } else {
-                //失败组装返回数据
-                $data = [
-                    'status' => '2',
-                    'msg' => '图片上传失败!',
-                    'url' => ''
-                ];
-            }
-        } else {//不合法
-            $data = [
-                'status' => '3',
-                'msg' => '图片不合法!',
-                'url' => ''
-            ];
-        }
-        echo json_encode($data);
-    }
-
     /* @fun: 修改专业分类的显示页面
      * @author: fanzhiyi
      * @date: 2017/7/10 11:37
      * @param: $id 要修改的专业分类id
      * @return:
      */
-    public function edit($id,Request $request)
+    public function edit($id, Request $request)
     {
-        if($request->isMethod('get')){
+        if ($request->isMethod('get')) {
             //获取要修改的这条数据
-            $data = Protype::find($id);
+            $edit = Protype::find($id);
+
+            //取出分类数据
+            $data = Protype::get()->toarray();
+
+            //无限极分类
+            $data = getTree($data);
 
             //返回数据并显示页面
-            return view('admin.Protype.edit')->with('edit',$data);
+            return view('admin.Protype.edit')->with(['edit'=>$edit,'data'=>$data]);
         }
 
-        if($request->isMethod('post')){
+        if ($request->isMethod('post')) {
             //获取准备更新的数据
-            $input = $request->only(['Protype_name','Protype_site','Protype_logo','description']);
+            $input = $request->only(['protype_name', 'pid', 'sort', 'status','remark']);
+
+            //删除空数据
+            $data = delRepeat($input);
 
             //执行更新操
-            $res = Protype::where('id','=',$id)->update($input);
+            $res = Protype::where('id', '=', $id)->update($input);
 
             //返回执行结果
-            if($res){
-                echo "<script type='text/javascript'>
-                alert('success!');
-                var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
-                parent.location.reload(); // 父页面刷新
-                parent.layer.close(index);//关闭当前弹出层
-                </script>";
+            if ($res) {
+                return [
+                    'status' => 1,
+                    'msg' => 'edit success!'
+                ];
             } else {
-                return back()->withErrors('failed!');
+                return [
+                    'status' => 2,
+                    'msg' => 'edit failed!'
+                ];
             }
         }
     }

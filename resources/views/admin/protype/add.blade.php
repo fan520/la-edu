@@ -22,7 +22,7 @@
 <body>
 
 <article class="page-container">
-    <form class="form form-horizontal" id="form"  method="post">
+    <form class="form form-horizontal" id="form-admin-add"  method="post">
         <input type="hidden" name="_token" value="{{csrf_token()}}">
         @if (count($errors) > 0)
             <div class="alert alert-danger">
@@ -33,8 +33,6 @@
                 </ul>
             </div>
         @endif
-
-
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>专业分类：</label>
             <div class="formControls col-xs-8 col-sm-8">
@@ -45,10 +43,10 @@
             <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>所属分类：</label>
             <div class="formControls col-xs-8 col-sm-8"> <span class="select-box" style="width:150px;">
 			<select class="select" name="pid" size="1">
-               <option value="0">请选择</option>
-				{{--@foreach($role as $v)--}}
-                    {{--<option value="{{ $v->id }}">{{ $v->role_name }}</option>--}}
-                {{--@endforeach--}}
+               <option value="0">=顶级分类=</option>
+				@foreach($data as $v)
+                    <option value="{{ $v['id'] }}"> {{ str_repeat("&nbsp;",$v['level']*4) }}{{ $v['protype_name'] }}</option>
+                @endforeach
 			</select>
 			</span>
             </div>
@@ -163,7 +161,7 @@
 
         // 文件上传成功，给item添加成功class, 用样式标记上传成功。
         uploader.on( 'uploadSuccess', function( file ,res) {
-            console.log(res);
+
             if(res.status==1){//上传成功!
                 $('#brand_logo').val(res.url);
 
@@ -210,11 +208,10 @@
             focusCleanup: true,
             success: "valid",
             submitHandler: function (form) {
-                $("#form").ajaxSubmit({
+                $("form").ajaxSubmit({
                     type: 'post',
                     url: "{{ url('admin/protype/add') }}",
                     success: function (data) {
-                        alert(data);
                         if (data.status == 1) {
                             layer.msg(data.msg, {icon: 1, time: 1000});
                             setTimeout(function () {
