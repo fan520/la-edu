@@ -90,7 +90,7 @@ return [
     |
     */
 
-    'fallback_locale' => 'en',
+    'fallback_locale' => 'zh-CN',
 
     /*
     |--------------------------------------------------------------------------
@@ -178,6 +178,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        //七牛云支持
+        zgldh\QiniuStorage\QiniuFilesystemServiceProvider::class,
         //自定义下载的调试类
         //Barryvdh\Debugbar\ServiceProvider::class,
         //注册input类

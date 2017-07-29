@@ -29,15 +29,14 @@ class CreateAdminTable extends Migration
             $table->string('email',40)->notnull()->default('')->comment('邮箱');
             //角色id
             $table->tinyInteger('role_id')->notnull()->comment('角色id');
-            //增加时间&修改时间
-            $table->timestamps();
-            //记住用户登录状态
-            $table->rememberToken();
             //用户状态字段
             $table->enum('status',[1,2])->notnull()->default('2')->comment('用户状态');
-
-
-
+            //记住用户登录状态
+            $table->rememberToken();
+            //增加时间&修改时间
+            $table->timestamps();
+            //软删除
+            $table->softDeletes();
         });
     }
 

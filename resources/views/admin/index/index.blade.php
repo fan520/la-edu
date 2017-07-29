@@ -49,7 +49,7 @@
 						<ul class="dropDown-menu menu radius box-shadow">
 							<li><a href="javascript:;" onClick="myselfinfo()">个人信息</a></li>
 							<li><a href="#">切换账户</a></li>
-							<li><a href="{{ url('admin/logout') }}">退出</a></li>
+							<li><a href="{{ url('admin/admin/logout') }}">退出</a></li>
 						</ul>
 					</li>
 					<li id="Hui-msg"> <a href="#" title="消息"><span class="badge badge-danger">1</span><i class="Hui-iconfont" style="font-size:18px">&#xe68a;</i></a> </li>
@@ -90,9 +90,9 @@
 			<dt><i class="Hui-iconfont">&#xe620;</i> 产品管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 			<dd>
 				<ul>
-					<li><a data-href="{{ asset('admin/brand') }}" data-title="品牌管理" href="javascript:void(0)">品牌管理</a></li>
-					<li><a data-href="product-category.html" data-title="分类管理" href="javascript:void(0)">分类管理</a></li>
-					<li><a data-href="product-list.html" data-title="产品管理" href="javascript:void(0)">产品管理</a></li>
+					<li><a data-href="{{ asset('admin/brand/index') }}" data-title="品牌管理" href="javascript:void(0)">品牌管理</a></li>
+					<li><a data-href="{{ asset('admin/protype/index') }}" data-title="分类管理" href="javascript:void(0)">分类管理</a></li>
+					<li><a data-href="{{ asset('admin/product/index') }}" data-title="产品管理" href="javascript:void(0)">产品管理</a></li>
 				</ul>
 			</dd>
 		</dl>
@@ -109,8 +109,8 @@
 			<dt><i class="Hui-iconfont">&#xe60d;</i> 会员管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 			<dd>
 				<ul>
-					<li><a data-href="member-list.html" data-title="会员列表" href="javascript:;">会员列表</a></li>
-					<li><a data-href="member-del.html" data-title="删除的会员" href="javascript:;">删除的会员</a></li>
+					<li><a data-href="{{ url('admin/member/index')}}" data-title="会员列表" href="javascript:;">会员列表</a></li>
+					<li><a data-href="{{ url('admin/member/del')}}" data-title="删除的会员" href="javascript:;">删除的会员</a></li>
 					<li><a data-href="member-level.html" data-title="等级管理" href="javascript:;">等级管理</a></li>
 					<li><a data-href="member-scoreoperation.html" data-title="积分管理" href="javascript:;">积分管理</a></li>
 					<li><a data-href="member-record-browse.html" data-title="浏览记录" href="javascript:void(0)">浏览记录</a></li>
@@ -123,9 +123,9 @@
 			<dt><i class="Hui-iconfont">&#xe62d;</i> 管理员管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 			<dd>
 				<ul>
-					<li><a data-href="{{ url('admin/role') }}" data-title="角色管理" href="javascript:void(0)">角色管理</a></li>
-					<li><a data-href="{{ url('admin/auth') }}" data-title="权限管理" href="javascript:void(0)">权限管理</a></li>
-					<li><a data-href="{{ url('admin/manage') }}" data-title="管理员列表" href="javascript:void(0)">管理员列表</a></li>
+					<li><a data-href="{{ url('admin/role/index') }}" data-title="角色管理" href="javascript:void(0)">角色管理</a></li>
+					<li><a data-href="{{ url('admin/auth/index') }}" data-title="权限管理" href="javascript:void(0)">权限管理</a></li>
+					<li><a data-href="{{ url('admin/manage/index') }}" data-title="管理员列表" href="javascript:void(0)">管理员列表</a></li>
 				</ul>
 			</dd>
 		</dl>
@@ -172,7 +172,7 @@
 	<div id="iframe_box" class="Hui-article">
 		<div class="show_iframe">
 			<div style="display:none" class="loading"></div>
-			<iframe scrolling="yes" frameborder="0" name="main" src="{{ url('admin/welcome') }}"></iframe>
+			<iframe scrolling="yes" frameborder="0" name="main" src="{{ url('admin/admin/welcome') }}"></iframe>
 		</div>
 	</div>
 </section>

@@ -13,7 +13,7 @@ class Auth extends Model
     protected $table = 'Auth';
 
     //禁用自动添加时间戳
-    public $timestamps = false;
+    //public $timestamps = false;
 
     //允许操作的字段
     protected $fillable = ['auth_name','controller','action','pid','is_nav'];

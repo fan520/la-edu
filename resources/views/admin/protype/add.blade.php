@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
     <meta http-equiv="Cache-Control" content="no-siteapp" />
     @include('admin.common.header')
-    <title>修改品牌 - 资讯管理 - H-ui.admin v3.0</title>
+    <title>添加分类 - 专业管理 </title>
     <meta name="keywords" content="">
     <meta name="description" content="">
 
@@ -22,7 +22,7 @@
 <body>
 
 <article class="page-container">
-    <form class="form form-horizontal" id="form-article-add" action="{{url('admin/brand/edit')}}/{{$edit->id}}" method="post">
+    <form class="form form-horizontal" id="form"  method="post">
         <input type="hidden" name="_token" value="{{csrf_token()}}">
         @if (count($errors) > 0)
             <div class="alert alert-danger">
@@ -36,47 +36,51 @@
 
 
         <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>品牌名称：</label>
-            <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="{{ $edit->brand_name }}" placeholder="" id="articletitle" name="brand_name">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>专业分类：</label>
+            <div class="formControls col-xs-8 col-sm-8">
+                <input type="text" class="input-text" value="" placeholder="" id="protype_name" name="protype_name">
             </div>
         </div>
         <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-2">site：</label>
-            <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="{{ $edit->brand_site }}" placeholder="" id="articletitle2" name="brand_site">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>所属分类：</label>
+            <div class="formControls col-xs-8 col-sm-8"> <span class="select-box" style="width:150px;">
+			<select class="select" name="pid" size="1">
+               <option value="0">请选择</option>
+				{{--@foreach($role as $v)--}}
+                    {{--<option value="{{ $v->id }}">{{ $v->role_name }}</option>--}}
+                {{--@endforeach--}}
+			</select>
+			</span>
             </div>
         </div>
-
         <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-2">logo：</label>
-            <div class="formControls col-xs-8 col-sm-9">
-                <div id="thelist" class="uploader-list">
-                    <div id="' + file.id + '" class="file-item thumbnail" >
-
-                            <img  style="width:150px; display:inline;margin-bottom: 5px;border-radius:5px;" id="logo_thumb" src="{{ $edit->brand_logo }}"/>
-
-                        <input type="hidden" name="brand_logo" id="brand_logo" value="{{ $edit->brand_logo }}">
-                        <input type="hidden" name="brand_logo_new" id="brand_logo_new">
-                    </div>
+            <label class="form-label col-xs-4 col-sm-3">排序：</label>
+            <div class="formControls col-xs-8 col-sm-8">
+                <input type="text" class="input-text" value="50" placeholder="" id="sort" name="sort">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>状态：</label>
+            <div class="formControls col-xs-8 col-sm-8 skin-minimal">
+                <div class="radio-box">
+                    <input name="status" type="radio" id="sex-1" value="1" checked>
+                    <label for="sex-1">启用</label>
                 </div>
-                <div>
-                    <div id="filePicker" style="display:inline;">选择图片</div>
-                    <div id="ctlBtn" class="webuploader-pick" style="background-color: #429842;">开始上传</div>
+                <div class="radio-box">
+                    <input name="status" type="radio" id="sex-1" value="2">
+                    <label for="sex-1">禁用</label>
                 </div>
             </div>
         </div>
-        </div>
         <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-2">描述：</label>
-            <div class="formControls col-xs-8 col-sm-9">
-                <textarea name="description" cols="" rows="" class="textarea"   datatype="*10-100" dragonfly="true"  >{{ $edit->description }}</textarea>
-                <p class="textarea-numberbar"><em class="textarea-length">0</em>/200</p>
+            <label class="form-label col-xs-4 col-sm-3">备注：</label>
+            <div class="formControls col-xs-8 col-sm-8">
+                <input type="text" class="input-text" value="" placeholder="" id="remark" name="remark">
             </div>
         </div>
         <div class="row cl">
             <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
-                <input type="submit" value="修改" class="btn btn-secondary radius">
+                <input type="submit" value="添加" class="btn btn-secondary radius">
                 <button onClick="removeIframe();" class="btn btn-default radius" type="button">&nbsp;&nbsp;取消&nbsp;&nbsp;</button>
             </div>
         </div>
@@ -114,9 +118,7 @@
         var thumbnailHeight = 150;
 
         var uploader = WebUploader.create({
-            //获取旧图片路径
-
-            formData:{'_token':"{{ csrf_token() }}",'old_logo':$('#brand_logo').val(),'new_logo':$('#brand_logo_new').val(),'brand_id':"{{$edit->id}}"},
+            formData:{'_token':"{{ csrf_token() }}"},
             // 选完文件后，是否自动上传。
             auto: false,
 
@@ -147,6 +149,11 @@
             // 如果为非图片文件，可以不用调用此方法。
             // thumbnailWidth x thumbnailHeight 为 100 x 100
             uploader.makeThumb( file, function( error, src ) {   //webuploader方法
+//            if ( error ) {
+//                layer.alert("图片错误,请重新添加!");
+//                return;
+//            }
+
                 //上面的html代码中已经有一个img,这里最多允许添加一张图片,所以有新图片添加进来的时候,会替换掉原来的图片,而不是新加入一个
                 $('#logo_thumb').prop( 'src', src );
             }, thumbnailWidth, thumbnailHeight );
@@ -156,8 +163,8 @@
 
         // 文件上传成功，给item添加成功class, 用样式标记上传成功。
         uploader.on( 'uploadSuccess', function( file ,res) {
+            console.log(res);
             if(res.status==1){//上传成功!
-                $('#brand_logo_new').val(res.url);
                 $('#brand_logo').val(res.url);
 
                 //提示成功信息
@@ -182,6 +189,46 @@
 
 //	var ue = UE.getEditor('editor');
 
+    });
+
+    $(function () {
+        $('.skin-minimal input').iCheck({
+            checkboxClass: 'icheckbox-blue',
+            radioClass: 'iradio-blue',
+            increaseArea: '20%'
+        });
+
+        $("#form-admin-add").validate({
+            rules: {
+                protype_name: {
+                    required: true,
+                    minlength: 2,
+                    maxlength: 16
+                },
+            },
+            onkeyup: false,
+            focusCleanup: true,
+            success: "valid",
+            submitHandler: function (form) {
+                $("#form").ajaxSubmit({
+                    type: 'post',
+                    url: "{{ url('admin/protype/add') }}",
+                    success: function (data) {
+                        alert(data);
+                        if (data.status == 1) {
+                            layer.msg(data.msg, {icon: 1, time: 1000});
+                            setTimeout(function () {
+                                parent.location.reload();
+                                var index = parent.layer.getFrameIndex(window.name);
+                                parent.layer.close(index);
+                            }, 1000);
+                        } else {
+                            layer.msg(data.msg, {icon: 2, time: 1000});
+                        }
+                    },
+                });
+            }
+        });
     });
 </script>
 <!--/请在上方写此页面业务相关的脚本-->

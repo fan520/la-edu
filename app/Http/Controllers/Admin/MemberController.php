@@ -2,17 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Admin\Admin;
-use App\Models\Admin\Role;
+use App\Models\Admin\Member;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
-
-class ManageController extends Controller
+class MemberController extends Controller
 {
-    /* @fun: 管理员列表
+    /* @fun: 会员列表
      * @author: fanzhiyi
      * @date: 2017/7/14 15:00
      * @param:
@@ -21,7 +17,7 @@ class ManageController extends Controller
     public function index(Request $request)
     {
         if($request->isMethod('get')){
-            return view('admin.manage.index');
+            return view('admin.member.index');
         }
 
         if($request->isMethod('post')){
@@ -30,7 +26,7 @@ class ManageController extends Controller
             $offset = $pagestart * $pagesize;
 
             //拼接查询条件
-            $query = Admin::query();//查询对象
+            $query = Member::query();//查询对象
             //开始时间
             if ($start = $request->get('updated_start')) {
                 $query->where('created_at', '>', $start);
@@ -53,9 +49,7 @@ class ManageController extends Controller
         }
     }
 
-
-
-    /* @fun: 管理员添加
+    /* @fun: 会员添加
      * @author: fanzhiyi
      * @date: 2017/7/14 15:00
      * @param:
@@ -64,45 +58,47 @@ class ManageController extends Controller
     public function add(Request $request)
     {
         if($request->isMethod('get')){
-            $role = Role::get();
-            return view('admin.manage.add')->with('role',$role);
+            $role = Member::get();
+            return view('admin.member.add')->with('role',$role);
         }
 
         if($request->isMethod('post')){
             //接受要入库的数据
-            $input = $request->except(['_token','password2']);
+
+            $input = $request->except(['_token','password2','file']);
             $input['password'] = bcrypt($input['password']);
 
+            if($request->get('password') !== $request->get('password2')){
+                return back()->withErrors('两次密码不一致!');
+            }
             //验证数据是否合法
             $this->validate($request, [
-                'username' => 'required|unique:admin,username|min:4|max:20',
+                'username' => 'required|unique:member,username|min:4|max:20',
                 'password' => 'required|min:4|max:20',
-                'gender' => 'required',
-                'role_id' => 'required',
             ]);
 
             //去掉空数据
             $input = delRepeat($input);
 
             //执行添加新数据
-            $inc = Admin::create($input)->incrementing;//增量
+            $inc = Member::create($input)->incrementing;//增量
 
             //判断结果
             if ($inc) {
-                echo "<script type='text/javascript'>
-                alert('添加成功!');
-                var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
-                parent.location.reload(); // 父页面刷新
-                parent.layer.close(index);//关闭当前弹出层
-                </script>";
+                return [
+                    'status' => '1',
+                    'msg' => '添加成功!',
+                ];
             } else {
-                echo "<script type='text/javascript'>alert('添加失败!');window.location.href='admin/manage';</script>";
+                return [
+                    'status' => '2',
+                    'msg' => '添加失败!',
+                ];
             }
         }
-
     }
 
-    /* @fun: 修改管理员
+    /* @fun: 修改会员
      * @author: fanzhiyi
      * @date: 2017/7/15 18:59
      * @param:
@@ -111,7 +107,7 @@ class ManageController extends Controller
     public function edit($id,Request $request)
     {
         if($request->isMethod('get')){
-            $data = Admin::find($id);
+            $data = Member::find($id);
             if(!$data){
                 echo "<script type='text/javascript'>
                 layer.alert('数据不存在!');
@@ -119,30 +115,36 @@ class ManageController extends Controller
                 exit;
             }
 
-            //取出角色数据
-            $roles = Role::where('id','>','0')->select('role_name','id')->get();
-
-            return view('admin.manage.edit')->with(['edit' => $data,'roles' => $roles]);
+            return view('admin.member.edit')->with(['edit' => $data]);
         }
 
         if($request->isMethod('post')){
+
             //获取准备更新的数据
-            $input = $request->only(['username','password','gender','mobile','email','role_id','status']);
-            $input['password'] = bcrypt($input['password']);
+            $input = $request->only(['username','password','gender','mobile','email','role_id','status','avatar','type','remark']);
+
+            //去除空数据
             $input = delRepeat($input);
+
+            //密码加密
+            if(isset($input['password'])){
+                $input['password'] = bcrypt($input['password']);
+            }
+
             //执行更新操
-            $res = Admin::where('id','=',$id)->update($input);
+            $res = Member::where('id','=',$id)->update($input);
 
             //返回执行结果
             if($res){
-                echo "<script type='text/javascript'>
-                alert('success!');
-                var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
-                parent.location.reload(); // 父页面刷新
-                parent.layer.close(index);//关闭当前弹出层
-                </script>";
+                return [
+                    'status' => 1,
+                    'msg' => 'update success!'
+                ];
             } else {
-                return back()->withErrors('failed!');
+                return [
+                    'status' => 2,
+                    'msg' => 'update failed!'
+                ];
             }
         }
 
@@ -168,9 +170,9 @@ class ManageController extends Controller
 
         //批量删除
         if (is_array($id)) {
-            $res = Admin::whereIn('id', $id)->delete();//返回受影响的行数
+            $res = Member::whereIn('id', $id)->delete();//返回受影响的行数
         } else {
-            $res = Admin::where('id', $id)->delete();
+            $res = Member::where('id', $id)->delete();
         }
 
         //返回结果
@@ -186,7 +188,5 @@ class ManageController extends Controller
             ];
         }
     }
-
-
 
 }

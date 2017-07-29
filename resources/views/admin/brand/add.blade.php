@@ -22,7 +22,7 @@
 <body>
 
 <article class="page-container">
-    <form class="form form-horizontal" id="form-article-add" action="{{url('admin/brand')}}" method="post">
+    <form class="form form-horizontal" id="form-article-add" action="{{url('admin/brand/add')}}" method="post">
         <input type="hidden" name="_token" value="{{csrf_token()}}">
         @if (count($errors) > 0)
             <div class="alert alert-danger">

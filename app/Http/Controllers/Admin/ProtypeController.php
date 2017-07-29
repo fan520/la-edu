@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Admin\Brand;
+use App\Models\Admin\Protype;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
-class BrandController extends Controller
+class ProtypeController extends Controller
 {
-    /* @fun: 品牌列表展示
+    /* @fun: 专业分类列表展示
      * @author: fanzhiyi
      * @date: 2017/7/7 11:26
      * @param:
@@ -18,7 +18,7 @@ class BrandController extends Controller
     public function index(Request $request)
     {
         if($request->isMethod('get')){
-            return view('admin.brand.index');
+            return view('admin.Protype.index');
         }
 
         if($request->isMethod('post')){
@@ -27,7 +27,7 @@ class BrandController extends Controller
             $offset = $pagestart * $pagesize;
 
             //拼接查询条件
-            $query = Brand::query();//查询对象
+            $query = Protype::query();//查询对象
             //开始时间
             if ($start = $request->get('updated_start')) {
                 $query->where('updated_at', '>', $start);
@@ -36,8 +36,8 @@ class BrandController extends Controller
             if ($end = $request->get('updated_end')) {
                 $query->where('updated_at', '<', $end);
             }
-            if ($brand_name = $request->get('brand_name')) {
-                $query->where('brand_name', 'LIKE', '%' . $brand_name . '%');
+            if ($Protype_name = $request->get('brand_name')) {
+                $query->where('protype_name', 'LIKE', '%' . $Protype_name . '%');
             }
             $data = $query->offset($offset)->limit($pagesize)->get()->toArray();
 
@@ -50,7 +50,7 @@ class BrandController extends Controller
         }
     }
 
-    /* @fun: 添加品牌
+    /* @fun: 添加专业分类
      * @author: fanzhiyi
      * @date: 2017/7/7 15:04
      * @param:
@@ -59,46 +59,42 @@ class BrandController extends Controller
     public function add(Request $request)
     {
         if($request->isMethod('get')){
-            return view('admin/brand/add');
+            return view('admin/Protype/add');
         }
 
         if($request->isMethod('post')){
+            //数据验证
+            $this->validate($request, [
+                'protype_name' => 'required|unique:protype,protype_name|max:255',
+                'status' => 'required',
+            ]);
+
             //接受入库的数据
-            $data['brand_name'] = $request->get('brand_name');
-            $data['brand_site'] = $request->get('brand_site');
-            $data['brand_logo'] = $request->get('brand_logo');
-            $data['description'] = $request->get('description');
+            $data = $request->except('_token');
 
+            //删除空数据
+            $data = delRepeat($data);
 
-            //执行验证
-            if (empty($data)) {
-                return back()->withErrors('请输入数据!');
-            }
+            //插入数据
+            $res = Protype::create($data);
 
-            $validator = (new Brand())->storeValidator($data);
-
-            //判断验证结果
-            if (!$validator->fails()) {
-                //插入数据
-                $res = Brand::create($data);
-                if ($res) {
-                    echo "<script type='text/javascript'>
-                alert('添加成功!');
-                var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
-                parent.location.reload(); // 父页面刷新
-                parent.layer.close(index);//关闭当前弹出层
-                </script>";
-                } else {
-                    echo "<script type='text/javascript'>alert('添加失败!');window.location.href='admin/login';</script>";
-                }
+            if ($res) {
+                return [
+                    'status' => 1,
+                    'msg' => 'add success!'
+                ];
             } else {
-                return back()->withErrors($validator);
+                return [
+                    'status' => 2,
+                    'msg' => 'add failed!'
+                ];
             }
+
         }
 
     }
 
-    /* @fun: 批量删除品牌
+    /* @fun: 批量删除专业分类
      * @author: fanzhiyi
      * @date: 2017/7/9 21:50
      * @param: $ids 要删除数据的id
@@ -118,9 +114,9 @@ class BrandController extends Controller
 
         //批量删除
         if (is_array($id)) {
-            $res = Brand::whereIn('id', $id)->delete();//返回受影响的行数
+            $res = Protype::whereIn('id', $id)->delete();//返回受影响的行数
         } else {
-            $res = Brand::where('id', $id)->delete();
+            $res = Protype::where('id', $id)->delete();
         }
 
         //返回结果
@@ -157,7 +153,7 @@ class BrandController extends Controller
             $ext = $file->getClientOriginalExtension();     // 扩展名
             $realPath = $file->getRealPath();   //临时文件的绝对路径
             $datapath = date('Y-m-d', time());//每日为一个文件夹
-            $Path = public_path() . "/admin/uploads/brand/";//上传路径
+            $Path = public_path() . "/admin/uploads/Protype/";//上传路径
 
             //文件夹不存在就创建
             if (!file_exists($Path)) {
@@ -179,9 +175,9 @@ class BrandController extends Controller
                 }
 
                 //删除数据库中的logo路径,更新新的图片信息
-                $save = Brand::find($request->get('brand_id'));
+                $save = Protype::find($request->get('Protype_id'));
                 if($save){
-                    $save->brand_logo = "/admin/uploads/brand/" . $datapath . '/' . $filename;
+                    $save->Protype_logo = "/admin/uploads/Protype/" . $datapath . '/' . $filename;
                     $save->save();
                 }
 
@@ -190,7 +186,7 @@ class BrandController extends Controller
                 $data = [
                     'status' => '1',
                     'msg' => '图片上传成功!',
-                    'url' => "/admin/uploads/brand/" . $datapath . '/' . $filename
+                    'url' => "/admin/uploads/Protype/" . $datapath . '/' . $filename
                 ];
             } else {
                 //失败组装返回数据
@@ -210,28 +206,28 @@ class BrandController extends Controller
         echo json_encode($data);
     }
 
-    /* @fun: 修改品牌的显示页面
+    /* @fun: 修改专业分类的显示页面
      * @author: fanzhiyi
      * @date: 2017/7/10 11:37
-     * @param: $id 要修改的品牌id
-     * @return: 
+     * @param: $id 要修改的专业分类id
+     * @return:
      */
     public function edit($id,Request $request)
     {
         if($request->isMethod('get')){
             //获取要修改的这条数据
-            $data = Brand::find($id);
+            $data = Protype::find($id);
 
             //返回数据并显示页面
-            return view('admin.brand.edit')->with('edit',$data);
+            return view('admin.Protype.edit')->with('edit',$data);
         }
 
         if($request->isMethod('post')){
             //获取准备更新的数据
-            $input = $request->only(['brand_name','brand_site','brand_logo','description']);
+            $input = $request->only(['Protype_name','Protype_site','Protype_logo','description']);
 
             //执行更新操
-            $res = Brand::where('id','=',$id)->update($input);
+            $res = Protype::where('id','=',$id)->update($input);
 
             //返回执行结果
             if($res){

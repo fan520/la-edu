@@ -14,7 +14,7 @@
 </head>
 <body>
 <article class="page-container">
-    <form class="form form-horizontal" id="form-admin-add" method="POST" action="{{ url('admin/auth') }}">
+    <form class="form form-horizontal" id="form-admin-add" method="post" action="{{ url('admin/auth/add') }}">
         <input type="hidden" name="_token" value="{{csrf_token()}}">
         @if (count($errors) > 0)
             <div class="alert alert-danger">

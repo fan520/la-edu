@@ -62,7 +62,7 @@
         $table = $('.table-sort').dataTable({
             "aaSorting": [[1, "desc"]],//默认第几个排序
             "bStateSave": true,//状态保存
-            "lengthMenu": [2, 5, 10, 20, 50],//表格左上角可选每页显示条数
+            "lengthMenu": [10, 20, 50],//表格左上角可选每页显示条数
             "searching": false,//关闭本地搜索
             "serverSide": true,//开启服务器模式
             'createdRow': function (row, data) {//当每行创建的时候执行的回调函数
@@ -81,9 +81,6 @@
                     $row.find('td:eq(3)').html("保密");
                 }
 
-                //改变角色显示
-
-
                 //第8列改成状态
                 if(data.status==1){
                     $row.find('td:eq(8)').html("启用");
@@ -97,7 +94,7 @@
 
             },
             'ajax': {
-                'url': "{{ url('admin/manage/getList') }}",
+                'url': "{{ url('admin/manage/index') }}",
                 'type': "post",
                 'data': function (data) {
                     //每页显示的数据量
@@ -143,7 +140,7 @@
     /*管理员-添加start*/
     function manage_add() {
         var title = "添加管理员";//弹窗标题
-        var url = "{{ url('admin/manage/create') }}";//弹窗的地址
+        var url = "{{ url('admin/manage/add') }}";//弹窗的地址
         var h = "510";//弹窗高度
         var w = "800";//弹窗宽度
         layer_show(title, url, w, h);
@@ -153,7 +150,7 @@
     /*管理员-编辑start*/
     function manage_edit(id) {
         var title = "修改管理员";//弹窗标题
-        var url = "{{ url('admin/manage') }}/"+id+"/edit";//弹窗的地址
+        var url = "{{ url('admin/manage/edit') }}/"+id;//弹窗的地址
         var h = "500";//弹窗高度
         var w = "800";//弹窗宽度
         layer_show(title, url, w, h);
@@ -175,11 +172,11 @@
             } else {
                 $.ajax({
                     type: 'post',
-                    url: "{{ url('admin/manage/batchDel') }}",
-                    data: {'ids': ids, '_token': "{{ csrf_token() }}"},
+                    url: "{{ url('admin/manage/del') }}",
+                    data: {'id': ids, '_token': "{{ csrf_token() }}"},
                     dataType: 'json',
                     success: function (data) {
-                        if (data.status) {
+                        if (data.status===1) {
                             layer.msg('已删除!', {icon: 1, time: 1000});
                             $table.api().ajax.reload();//刷新表格对象 $table是上面的table对象,往上找能够发现为自定义
                             layer.close(index);
@@ -201,12 +198,12 @@
     function manageDelOne(id){
         layer.confirm('do delete?',function(i){
             $.ajax({
-                'url':"{{ url('admin/manage') }}/"+id,
-                'type':'delete',
+                'url':"{{ url('admin/manage/del') }}",
+                'type':'post',
                 'dataType':'json',
                 'data':{'id':id,'_token':"{{ csrf_token() }}"},
                 'success':function(res){
-                    if (res.status) {
+                    if (res.status===1) {
                         layer.msg('delete success!', {icon: 1, time: 1000});
                         $table.api().ajax.reload();//刷新表格对象 $table是上面的table对象,往上找能够发现为自定义
                         layer.close(i);

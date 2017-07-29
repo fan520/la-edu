@@ -63,6 +63,21 @@ return [
             'bucket' => env('AWS_BUCKET'),
         ],
 
+        //七牛云
+        'qiniu' => [
+            'driver'  => 'qiniu',
+            'domains' => [
+                'default'   => 'otsvb3m6e.bkt.clouddn.com', //你的七牛域名
+                'https'     => '',         //你的HTTPS域名
+                'custom'    => '',                //你的自定义域名
+            ],
+            'access_key'=> 'U2hWzEnLULtmCaMaong6Hhnws-btRKkOGgwY4x5Z',  //AccessKey
+            'secret_key'=> 'gv_7NeIa3hKoKrj3xzl2v-RmOC06fcOYgS66cfaz',  //SecretKey
+            'bucket'    => 'la-edu',  //Bucket名字
+            'notify_url'=> '',  //持久化处理回调地址
+            'access'    => 'public'  //空间访问控制 public 或 private
+        ],
+
     ],
 
 ];

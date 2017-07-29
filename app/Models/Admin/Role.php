@@ -22,5 +22,18 @@ class Role extends Model
     //主键
     protected $primaryKey = 'id';
 
-
+    /* @fun: 根据角色id获取角色名称
+     * @author: fanzhiyi
+     * @date: 2017/7/18 16:58
+     * @param: $id
+     * @return: $role_name
+     */
+    public static function getRoleNameById($id='')
+    {
+        if($id){
+             return Admin::where('id',$id)->select('role_name')->first()->role_name;
+        }else{
+            return '';
+        }
+    }
 }

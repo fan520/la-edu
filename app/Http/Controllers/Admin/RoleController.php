@@ -18,11 +18,11 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->isMethod('get')){
+        if ($request->isMethod('get')) {
 
             return view('admin.role.index');
 
-        }elseif($request->isMethod('post')){
+        } elseif ($request->isMethod('post')) {
             $pagesize = $request->get('pageSize');
             $pagestart = $request->get('page') - 1;
             $offset = $pagestart * $pagesize;
@@ -41,6 +41,17 @@ class RoleController extends Controller
                 $query->where('role_name', 'LIKE', '%' . $brand_name . '%');
             }
             $data = $query->offset($offset)->limit($pagesize)->get()->toArray();
+
+            //处理权限名称
+            foreach($data as $k => $v){
+                $auth_ids = explode(',',$v['auth_ids']);
+                $auth_name = Auth::whereIn('id',$auth_ids)->select('auth_name')->get()->toarray();
+                $data[$k]['auth_name'] = [];
+                foreach($auth_name as $v){
+                    $data[$k]['auth_name'][] = $v['auth_name'];
+                }
+                $data[$k]['auth_name'] = implode(',',$data[$k]['auth_name']);
+            }
 
             return [
                 'draw' => $request->get('draw'),
@@ -82,12 +93,20 @@ class RoleController extends Controller
         } elseif ($request->isMethod('post')) {
             //接受要入库的数据
             $input['role_name'] = $request->get('role_name');
-            $input['auth_ids'] = implode(',',$request->get('auth_ids'));
+            $input['auth_ids'] = implode(',', $request->get('auth_ids'));
 
             //验证数据是否合法
             $this->validate($request, [
                 'role_name' => 'required|unique:role,role_name',
             ]);
+
+            //拼接auth_ac字段数据
+            $auth = Auth::select('controller','action')->whereIn('id',$request->get('auth_ids'))->where('pid','>','0')->get()->toarray();
+            $auths = [];
+            foreach($auth as $v){
+                $auths[] = $v['controller'].'@'.$v['action'];
+            }
+            $input['auth_ac'] = implode(',',$auths);
 
             //去掉空数据
             $input = delRepeat($input);
@@ -123,24 +142,24 @@ class RoleController extends Controller
         $res = '';
 
         //非空判断
-        if(!$id){
+        if (!$id) {
             $res = false;
         }
 
         //批量删除
-        if(is_array($id)){
-            $res = Role::whereIn('id',$id)->delete();//返回受影响的行数
-        }else{
-            $res = Role::where('id',$id)->delete();
+        if (is_array($id)) {
+            $res = Role::whereIn('id', $id)->delete();//返回受影响的行数
+        } else {
+            $res = Role::where('id', $id)->delete();
         }
 
         //返回结果
-        if($res){
+        if ($res) {
             return [
                 'status' => 1,
                 'msg' => 'del success!'
             ];
-        }else{
+        } else {
             return [
                 'status' => 2,
                 'msg' => 'del failed!'
@@ -154,30 +173,58 @@ class RoleController extends Controller
      * @param:
      * @return:
      */
-    public function edit($id,Request $request)
+    public function edit($id, Request $request)
     {
         //编辑页面显示
-        if($request->isMethod('get')){
+        if ($request->isMethod('get')) {
             //顶级权限
             $p_role = Auth::where('pid', '0')->get();
             //二级权限
             $c_role = Auth::where('pid', '>', '0')->get();
 
             //当前角色拥有的权限
-            $role = Role::where('id',$id)->select('auth_ids')->first()->toarray();
-            P($role);
+            $role = Role::where('id', $id)->select('role_name', 'auth_ids')->first()->toarray();
+            $role['auth_ids'] = explode(',', $role['auth_ids']);
 
             return view('admin.role.edit')->with([
                 'p_role' => $p_role,
                 'c_role' => $c_role,
-                'role' => $role['0'],
+                'role' => $role,
                 'id' => $id
             ]);
         }
 
         //修改数据处理
-        if($request->isMethod('post')){
+        if ($request->isMethod('post')) {
+            //接受需要的数据
+            $input = $request->only(['role_name', 'auth_ids']);
+            $input['auth_ids'] = implode(',', $input['auth_ids']);
 
+            //拼接auth_ac字段数据
+            $auth = Auth::select('controller','action')->whereIn('id',$request->get('auth_ids'))->where('pid','>','0')->get()->toarray();
+            $auths = [];
+            foreach($auth as $v){
+                $auths[] = $v['controller'].'@'.$v['action'];
+            }
+            $input['auth_ac'] = implode(',',$auths);
+
+            //去除空数据
+            $input = delRepeat($input);
+
+            //执行更新
+            $res = Role::where('id', $id)->update($input);
+
+            //判断执行结果,并做返回处理
+            if ($res) {
+                echo "<script type='text/javascript'>
+                alert('edit success!');
+                var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+                parent.location.reload(); // 父页面刷新
+                parent.layer.close(index);//关闭当前弹出层
+                </script>";
+            } else {
+                echo "<script type='text/javascript'>alert('edit failed!');window.location.href='admin/role/index';</script>";
+            }
         }
 
     }

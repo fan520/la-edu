@@ -1,19 +1,6 @@
 <?php
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
 Route::get('/', function () {
     return view('welcome');
-
 });
 
 /*后台路由*/
@@ -21,46 +8,63 @@ Route::get('/', function () {
 Route::match(['get','post'],'admin/login','Admin\LoginController@login')->name('login');
 
 //后台登陆后才能访问的路由
-Route::group(['middleware' => 'auth:admin','namespace' => 'Admin','prefix' => 'admin'],function(){
+Route::group(['middleware' => ['auth:admin','checkrbac'],'namespace' => 'Admin','prefix' => 'admin'],function(){
     //后台首页
-    Route::get('index','AdminController@index');
-
-    //退出
-    Route::get('logout','AdminController@loginOut');
-
-    //后台欢迎页面
-    Route::get('welcome','AdminController@welcome');
+    Route::get('admin/index','AdminController@index');
+    Route::get('admin/logout','AdminController@logOut');//退出登陆
+    Route::get('admin/welcome','AdminController@welcome');//后台欢迎页面
 
 
     //*--管理员RBACstart--*//
-    Route::resource('manage','ManageController');//管理员资源路由
-    Route::post('manage/getList','ManageController@getList');//获取管理员列表数据
-    Route::post('manage/batchDel','ManageController@batchDel');//批量删除管理员
+    Route::match(['get','post'],'manage/add','ManageController@add');//添加角色(增)
+    Route::post('manage/del','ManageController@del');//批量删除角色(删)
+    Route::match(['get','post'],'manage/edit/{id}','ManageController@edit');//编辑角色(改)
+    Route::match(['get','post'],'manage/index','ManageController@index');//角色列表和查询角色(查)
     //*--管理员end--*//
 
 
     //*--角色RBACstart--*//
-    //Route::resource('role','RoleController');//角色资源路由
     Route::match(['get','post'],'role/add','RoleController@add');//添加角色(增)
     Route::post('role/del','RoleController@del');//批量删除角色(删)
     Route::match(['get','post'],'role/edit/{id}','RoleController@edit');//编辑角色(改)
     Route::match(['get','post'],'role/index','RoleController@index');//角色列表和查询角色(查)
-    Route::get('role/allocate_auth/{id}','RoleController@allocate_auth');//角色权限分配
     //*--角色end--*//
 
 
     //*--权限RBACstart--*//
-    Route::resource('auth','AuthController');//权限资源路由
-    Route::post('auth/getList','AuthController@getList');//获取权限列表数据
-    Route::post('auth/batchDel','AuthController@batchDel');//批量删除权限
+    Route::match(['get','post'],'auth/add','AuthController@add');//添加权限(增)
+    Route::post('auth/del','AuthController@del');//批量删除权限(删)
+    Route::match(['get','post'],'auth/edit/{id}','AuthController@edit');//编辑权限(改)
+    Route::match(['get','post'],'auth/index','AuthController@index');//权限列表和查询权限(查)
     //*--权限end--*//
 
 
+    //*--会员RBACstart--*//
+    Route::match(['get','post'],'member/add','MemberController@add');//添加权限(增)
+    Route::post('member/del','MemberController@del');//批量删除权限(删)
+    Route::match(['get','post'],'member/edit/{id}','MemberController@edit');//编辑权限(改)
+    Route::match(['get','post'],'member/index','MemberController@index');//权限列表和查询权限(查)
+    Route::post('upload/avatar','UploadController@avatar');//图片上传到本服务器
+    Route::post('upload/qiniu','UploadController@qiniu');//图片上传到七牛云
+    //*--会员end--*//
+
+
+    //*--专业分类start--*//
+    Route::match(['get','post'],'protype/add','ProtypeController@add');//添加分类(增)
+    Route::post('protype/del','ProtypeController@del');//批量删除分类(删)
+    Route::match(['get','post'],'protype/edit/{id}','ProtypeController@edit');//编辑分类(改)
+    Route::match(['get','post'],'protype/index','ProtypeController@index');//分类列表和查询分类(查)
+    Route::post('protype/logo','ProtypeController@logo');//批量删除分类(删)
+    //*--专业分类end--*//
+
+
+
     //*--品牌start--*//
-    Route::resource('brand','BrandController');//品牌资源路由
-    Route::post('brand/logo','BrandController@logo');//品牌logo路由
-    Route::post('brand/getList','BrandController@getList');//获取品牌列表数据
-    Route::post('brand/batchDel','BrandController@batchDel');//批量删除品牌
+    Route::match(['get','post'],'brand/add','BrandController@add');//添加权限(增)
+    Route::post('brand/del','BrandController@del');//批量删除权限(删)
+    Route::match(['get','post'],'brand/edit/{id}','BrandController@edit');//编辑权限(改)
+    Route::match(['get','post'],'brand/index','BrandController@index');//权限列表和查询权限(查)
+    Route::post('brand/logo','BrandController@logo');//批量删除权限(删)
     //*--品牌end--*//
 
 });

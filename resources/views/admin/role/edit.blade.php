@@ -16,12 +16,12 @@
 </head>
 <body>
 <article class="page-container">
-    <form action="{{ url('admin/role/add') }}" method="post" class="form form-horizontal" id="form-admin-role-add">
+    <form action="{{ url('admin/role/edit') }}/{{ $id }}" method="post" class="form form-horizontal" id="form-admin-role-add">
         <input type="hidden" name="_token" value="{{ csrf_token() }}">
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>角色名称：</label>
             <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="" placeholder="" id="roleName" name="role_name">
+                <input type="text" class="input-text" value="{{ $role['role_name'] }}" placeholder="" id="roleName" name="role_name">
             </div>
         </div>
         <div class="row cl">
@@ -34,7 +34,7 @@
                             <dl class="cl permission-list2">
                                 <dt>
                                     <label class="">
-                                        <input type="checkbox" value="{{ $p->id }}" name="auth_ids[]" @if(in_array($p->id,$role)) checked @endif>
+                                        <input type="checkbox" value="{{ $p->id }}" name="auth_ids[]" @if(in_array($p->id,$role['auth_ids'])) checked @endif>
                                         <b>{{ $p->auth_name }}</b></label>
                                 </dt>
                                 <dd>
@@ -42,7 +42,7 @@
                                         @if($c->pid === $p->id )
                                             <label>
                                                 <input type="checkbox" value="{{ $c->id }}"
-                                                       name="auth_ids[]" @if(in_array($c->id,$role)) checked @endif>{{ $c->auth_name }}
+                                                       name="auth_ids[]" @if(in_array($c->id,$role['auth_ids'])) checked @endif>{{ $c->auth_name }}
                                             </label>
                                         @endif
                                     @endforeach

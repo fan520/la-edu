@@ -58,5 +58,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         //自定义中间件检测是否登录
         'checklogin' => \App\Http\Middleware\CheckLogin::class,
+        //自定义中间件检测是否有访问权限
+        'checkrbac' => \App\Http\Middleware\CheckRbac::class,
     ];
 }

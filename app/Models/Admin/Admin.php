@@ -5,9 +5,10 @@ namespace App\Models\Admin;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Support\Facades\Request;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
 class Admin extends Model implements \Illuminate\Contracts\Auth\Authenticatable
 {
+    use SoftDeletes;
     use Authenticatable;
     //指定表名
     protected $table = 'admin';

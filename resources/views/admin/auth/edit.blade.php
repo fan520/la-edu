@@ -14,10 +14,8 @@
 </head>
 <body>
 <article class="page-container">
-    <form class="form form-horizontal" id="form-admin-add" method="post" action="{{ url('admin/auth') }}/{{ $edit->id }}">
+    <form class="form form-horizontal" id="form-admin-add" method="post" action="{{ url('admin/auth/edit') }}/{{ $edit->id }}">
         <input type="hidden" name="_token" value="{{csrf_token()}}">
-        <input type="hidden" name="id" value="{{ $edit->id}}">
-        <input type="hidden" name="_method" value="put">
         @if (count($errors) > 0)
             <div class="alert alert-danger">
                 <ul>

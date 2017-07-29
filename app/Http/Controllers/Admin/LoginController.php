@@ -29,7 +29,7 @@ class LoginController extends Controller
 
             //判断登陆结果
             if($result){
-                return redirect('admin/index');
+                return redirect('admin/admin/index');
             } else {
                 return back()->withErrors(['loginError' => '用户名或者密码错误!']);
             }
@@ -42,7 +42,7 @@ class LoginController extends Controller
      * @param:
      * @return:
      */
-    public function loginOut()
+    public function logOut()
     {
         Auth::guard('admin')->logout();
     }

@@ -90,6 +90,9 @@
         var mysrc = $('#mycaptcha').prop('src');
         $('#mycaptcha').prop('src',mysrc+Math.random())
     }
+    @if(isset($timeout))
+         parent.location.reload();
+    @endif
 </script>
 
 

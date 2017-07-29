@@ -58,7 +58,7 @@
         $table = $('.table-sort').dataTable({
             "aaSorting": [[1, "desc"]],//默认第几个排序
             "bStateSave": true,//状态保存
-            "lengthMenu": [2, 5, 10, 20, 50],//表格左上角可选每页显示条数
+            "lengthMenu": [5, 10, 20, 50],//表格左上角可选每页显示条数
             "searching": false,//关闭本地搜索
             "serverSide": true,//开启服务器模式
             'createdRow': function (row, data) {//当每行创建的时候执行的回调函数
@@ -98,7 +98,7 @@
                 {'data': 'a', 'defaultContent': ""},
                 {'data': 'id'},
                 {'data': 'role_name'},
-                {'data': 'auth_ids'},
+                {'data': 'auth_name'},
                 {'data': 'auth_ac'},
                 {'data': 'b', 'defaultContent': 'id'},
             ],
