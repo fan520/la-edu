@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Admin\Member;
+use App\Models\Admin\Profession;
 use App\Models\Admin\Protype;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 
-class ProtypeController extends Controller
+class ProfessionController extends Controller
 {
     /* @fun: 专业分类列表展示
      * @author: fanzhiyi
@@ -18,7 +20,7 @@ class ProtypeController extends Controller
     public function index(Request $request)
     {
         if ($request->isMethod('get')) {
-            return view('admin.Protype.index');
+            return view('admin.profession.index');
         }
 
         if ($request->isMethod('post')) {
@@ -27,7 +29,7 @@ class ProtypeController extends Controller
             $offset = $pagestart * $pagesize;
 
             //拼接查询条件
-            $query = Protype::query();//查询对象
+            $query = Profession::query();//查询对象
             //开始时间
             if ($start = $request->get('updated_start')) {
                 $query->where('updated_at', '>', $start);
@@ -39,23 +41,23 @@ class ProtypeController extends Controller
             if ($Protype_name = $request->get('brand_name')) {
                 $query->where('protype_name', 'LIKE', '%' . $Protype_name . '%');
             }
-            $data = $query->offset($offset)->limit($pagesize)->get()->toArray();
+            $data = $query->join('protype','protype.id','=','profession.protype_id')->select('profession.*','protype.protype_name')->offset($offset)->limit($pagesize)->get()->toArray();
 
-            $datas = [];
-            //添加父级分类的名称
-            foreach($data as $k => $v){
-                $parent_name  = DB::table('protype')->where('id',$v['pid'])->first();
-                if($parent_name){
-                    $v['parent_name'] = $parent_name->protype_name;
-                }
-                $datas[$k] = $v;
-            }
+//            $datas = [];
+//            //添加父级分类的名称
+//            foreach($data as $k => $v){
+//                $parent_name  = DB::table('profession')->where('id',$v['pid'])->first();
+//                if($parent_name){
+//                    $v['parent_name'] = $parent_name->protype_name;
+//                }
+//                $datas[$k] = $v;
+//            }
 
             return [
                 'draw' => $request->get('draw'),
                 'recordsFiltered' => $query->count(),//被检索后的数量
                 'recordsTotal' => $query->count(),//总记录数
-                'data' => $datas//返回的数据
+                'data' => $data//返回的数据
             ];
         }
     }
@@ -70,11 +72,14 @@ class ProtypeController extends Controller
     {
         if ($request->isMethod('get')) {
             //取出分类数据
-            $data = Protype::get()->toarray();
+            $protype = Protype::get()->toarray();
+
+            //取出老师数据
+            $teachers = Member::where('type',2)->select('id','username')->get();
 
             //无限极分类
-            $data = getTree($data);
-            return view('admin/Protype/add')->with(['data' => $data]);
+            $protype = getTree($protype);
+            return view('admin/profession/add')->with(['protype' => $protype,'teachers'=>$teachers]);
         }
 
         if ($request->isMethod('post')) {
@@ -195,5 +200,4 @@ class ProtypeController extends Controller
             }
         }
     }
-
 }

@@ -90,9 +90,10 @@
 			<dt><i class="Hui-iconfont">&#xe620;</i> 产品管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 			<dd>
 				<ul>
+					<li><a data-href="{{ asset('admin/profession/index') }}" data-title="专业管理" href="javascript:void(0)">专业管理</a></li>
 					<li><a data-href="{{ asset('admin/brand/index') }}" data-title="品牌管理" href="javascript:void(0)">品牌管理</a></li>
 					<li><a data-href="{{ asset('admin/protype/index') }}" data-title="分类管理" href="javascript:void(0)">分类管理</a></li>
-					<li><a data-href="{{ asset('admin/product/index') }}" data-title="产品管理" href="javascript:void(0)">产品管理</a></li>
+
 				</ul>
 			</dd>
 		</dl>

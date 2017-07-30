@@ -57,6 +57,14 @@ Route::group(['middleware' => ['auth:admin','checkrbac'],'namespace' => 'Admin',
     Route::post('protype/logo','ProtypeController@logo');//批量删除分类(删)
     //*--专业分类end--*//
 
+    //*--专业start--*//
+    Route::match(['get','post'],'profession/add','ProfessionController@add');//添加专业(增)
+    Route::post('profession/del','ProfessionController@del');//批量删除专业(删)
+    Route::match(['get','post'],'profession/edit/{id}','ProfessionController@edit');//编辑专业(改)
+    Route::match(['get','post'],'profession/index','ProfessionController@index');//专业列表和查询分类(查)
+    Route::post('profession/logo','ProfessionController@logo');//批量删除专业(删)
+    //*--专业end--*//
+
 
 
     //*--品牌start--*//
