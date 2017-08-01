@@ -3,9 +3,12 @@
 namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Profession extends Model
 {
+    use SoftDeletes;
+
     //注定表名
     protected $table = 'profession';
 

@@ -1,8 +1,4 @@
-/*
- * zyUpload.js 基于HTML5 文件上传的血肉脚本 http://www.czlqibu.com
- * by zhangyan 2014-06-26   QQ : 623585268
-*/
-
+ /* 代码整理：懒人之家 www.lanrenzhijia.com */
 (function($,undefined){
 	$.fn.zyUpload = function(options,param){
 		var otherArgs = Array.prototype.slice.call(arguments, 1);
@@ -20,24 +16,24 @@
 			var self = this;  // 保存组件对象
 			
 			var defaults = {
-					width            : "700px",  					      // 宽度
-					height           : "400px",  					      // 宽度
-					itemWidth        : "140px",                           // 文件项的宽度
-					itemHeight       : "120px",                           // 文件项的高度
-					url              : "/upload/UploadAction",  	      // 上传文件的路径
-					multiple         : true,  						      // 是否可以多个文件上传
-					dragDrop         : true,  						      // 是否可以拖动上传文件
-					del              : true,  						      // 是否可以删除文件
-					edit             : true,  						      // 是否可以重新上传文件
-					tailor           : true,  						      // 是否可以截取图片
-					finishDel        : false,  						      // 是否在上传文件完成后删除预览
+					width            : "700px",  					// 宽度
+					height           : "400px",  					// 宽度
+					itemWidth        : "140px",                     // 文件项的宽度
+					itemHeight       : "120px",                     // 文件项的高度
+					url              : "fileUploadAction!execute",  	// 上传文件的路径
+					multiple         : true,  						// 是否可以多个文件上传
+					dragDrop         : true,  						// 是否可以拖动上传文件
+					del              : true,  						// 是否可以删除文件
+					finishDel        : false,  						// 是否在上传文件完成后删除预览
+					// 编辑时回显图片
+					loadPic			  : [],
+                	loadPicRemove	  : function() {},
 					/* 提供给外部的接口方法 */
-					onSelect         : function(selectFiles, allFiles){}, // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
-					onProgress       : function(file, loaded, total){},   // 正在上传的进度的回调方法
-					onDelete		 : function(file, files){},           // 删除一个文件的回调方法 file:当前删除的文件  files:删除之后的文件
-					onSuccess		 : function(file, response){},        // 文件上传成功的回调方法
-					onFailure		 : function(file, response){},        // 文件上传失败的回调方法
-					onComplete		 : function(response){}               // 上传完成的回调方法
+					onSelect         : function(selectFiles, files){},// 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
+					onDelete		 : function(file, files){},     // 删除一个文件的回调方法 file:当前删除的文件  files:删除之后的文件
+					onSuccess		 : function(file){},            // 文件上传成功的回调方法
+					onFailure		 : function(file){},            // 文件上传失败的回调方法
+					onComplete		 : function(responseInfo){},    // 上传完成的回调方法
 			};
 			
 			para = $.extend(defaults,options);
@@ -45,8 +41,46 @@
 			this.init = function(){
 				this.createHtml();  // 创建组件html
 				this.createCorePlug();  // 调用核心js
+                this.loadPic(para.loadPic)
 			};
-			
+
+            /**
+             * 功能：编辑时候载入图片
+             * 参数: 无
+             * 返回: 无
+             */
+            this.loadPic = function(pic){
+                $('#preview').on('click', '.file_del', para.loadPicRemove)
+                var len = pic.length;
+                if(pic.length == 0 ) return;
+                var str = '';
+                // 处理配置参数编辑和删除按
+                var delHtml = "";
+
+                if(para.del){  // 显示删除按钮
+                    delHtml = '<span class="file_del" title="删除"></span>';
+                }
+                var obj,
+                    type;
+                for(var i = 0;i < len;i ++  ){
+                    obj = pic[i];
+                    type = typeof obj;
+                    str += '<div class="upload_append_list">';
+                    str += '<div class="file_bar file_hover"><div style="padding:5px;"><p class="file_name" title="">'
+                        +i
+                        +'.jpg</p>' + delHtml +
+                        '</div>	</div>	' +
+                        '<a style="height:100px;width:120px;" href="#" class="imgBox">' +
+                        '<div class="uploadImg" style="width:105px;max-width:105px;max-height:90px;">' +
+                        '<img  class="upload_image" src="'+(type == 'string' ? pic[i] : pic[i].viewPath)+'" data-val="'+(type == 'string' ? pic[i] : pic[i].path)+'">' +
+                        '</div>' +
+                        '</a>' +
+                        '<p id="uploadSuccess" class="file_success" style="display: block;"></p>' +
+                        '</div>'
+                }
+                $('#preview').append(str);
+				console.log(str);
+            }
 			/**
 			 * 功能：创建上传所使用的html
 			 * 参数: 无
@@ -88,7 +122,6 @@
 					html += '</form>';
 				}else{
 					var imgWidth = parseInt(para.itemWidth.replace("px", ""))-15;
-					
 					// 创建不带有拖动的html
 					html += '<form id="uploadForm" action="'+para.url+'" method="post" enctype="multipart/form-data">';
 					html += '	<div class="upload_box">';
@@ -156,23 +189,20 @@
 			 */
 			this.funFilterEligibleFile = function(files){
 				var arrFiles = [];  // 替换的文件数组
-//				if(files.length>2){
-//					alert("请选择2个以内的文件");
-//					return arrFiles;
-//				}else{
-					for (var i = 0, file; file = files[i]; i++) {
-						console.info(file);
-						if (file.size >= 51200000) {
-							alert('您这个"'+ file.name +'"文件大小过大');	
-						}else if(file.type != "image/jpeg") {
-							alert('您这个"'+ file.name +'"格式必须是jpg格式文件');		
-						}else{
-							// 在这里需要判断当前所有文件中
-							arrFiles.push(file);	
+				for (var i = 0, file; file = files[i]; i++) {
+					if (file.size >= 51200000) {
+						alert('您这个"'+ file.name +'"文件大小过大');	
+					} else {
+						// 在这里需要判断当前所有文件中
+						var fileExt = file.name.substr(file.name.lastIndexOf(".")).toLowerCase();//获得文件后缀名
+						if(fileExt==".png" || fileExt==".gif" || fileExt==".jpg" || fileExt==".jpeg")
+							arrFiles.push(file);//如果文件是图片格式，那么就放入文件的数组	
+						else {
+							alert("文件仅限于 png, gif, jpeg, jpg格式 !");
 						}
 					}
-					return arrFiles;
-//				}
+				}
+				return arrFiles;
 			};
 			
 			/**
@@ -183,15 +213,9 @@
 			this.funDisposePreviewHtml = function(file, e){
 				var html = "";
 				var imgWidth = parseInt(para.itemWidth.replace("px", ""))-15;
-				var imgHeight = parseInt(para.itemHeight.replace("px", ""))-10;
-				
-				// 处理配置参数编辑和删除按钮
-				var editHtml = "";
+
+				// 处理配置参数删除按钮
 				var delHtml = "";
-				
-				if(para.edit){  // 显示编辑按钮
-					editHtml = '<span class="file_edit" data-index="'+file.index+'" title="编辑"></span>';
-				}
 				if(para.del){  // 显示删除按钮
 					delHtml = '<span class="file_del" data-index="'+file.index+'" title="删除"></span>';
 				}
@@ -205,7 +229,7 @@
 				}else if(file.type.indexOf("text") > 0){
 					fileImgSrc = fileImgSrc + "txt.png";
 				}else{
-					fileImgSrc = fileImgSrc + "txt.png";
+					fileImgSrc = fileImgSrc + "file.png";
 				}
 				
 				
@@ -214,19 +238,17 @@
 					html += '<div id="uploadList_'+ file.index +'" class="upload_append_list">';
 					html += '	<div class="file_bar">';
 					html += '		<div style="padding:5px;">';
-					html += '			<p class="file_name" title="'+file.name+'">' + file.name + '</p>';
-					html += editHtml;  // 编辑按钮的html
+					html += '			<p class="file_name">' + file.name + '</p>';
 					html += delHtml;   // 删除按钮的html
 					html += '		</div>';
 					html += '	</div>';
 					html += '	<a style="height:'+para.itemHeight+';width:'+para.itemWidth+';" href="#" class="imgBox">';
-					html += '		<div class="uploadImg" style="width:'+imgWidth+'px;max-width:'+imgWidth+'px;max-height:'+imgHeight+'px;">';				
-					html += '			<img id="uploadImage_'+file.index+'" class="upload_image" src="' + e.target.result + '" style="width:expression(this.width > '+imgWidth+' ? '+imgWidth+'px : this.width);" />';                                                                 
+					html += '		<div class="uploadImg" style="width:'+imgWidth+'px">';				
+					html += '			<img id="uploadImage_'+file.index+'" class="upload_image" src="' + e.target.result + '" style="width:expression(this.width > '+imgWidth+' ? '+imgWidth+'px : this.width)" />';                                                                 
 					html += '		</div>';
 					html += '	</a>';
 					html += '	<p id="uploadProgress_'+file.index+'" class="file_progress"></p>';
 					html += '	<p id="uploadFailure_'+file.index+'" class="file_failure">上传失败，请重试</p>';
-					html += '	<p id="uploadTailor_'+file.index+'" class="file_tailor" tailor="false">裁剪完成</p>';
 					html += '	<p id="uploadSuccess_'+file.index+'" class="file_success"></p>';
 					html += '</div>';
                 	
@@ -253,24 +275,6 @@
 			};
 			
 			/**
-			 * 功能: 创建弹出层插件，会在其中进行裁剪操作
-			 * 参数: imgSrc 当前裁剪图片的路径
-			 * 返回: 无
-			 */
-			this.createPopupPlug = function(imgSrc, index){
-				// 初始化裁剪插件
-				$("body").zyPopup({
-					src        :   imgSrc,            // 图片的src路径
-					onTailor   :   function(val){     // 回调返回裁剪的坐标和宽高的值
-						$("#uploadTailor_" + index).show();       
-						$.getScript("jquery.json-2.4.js", function(){
-							$("#uploadTailor_" + index).attr("tailor",$.toJSON(val));
-						});
-					}
-				});
-			};
-			
-			/**
 			 * 功能：调用核心插件
 			 * 参数: 无
 			 * 返回: 无
@@ -294,7 +298,7 @@
 						var funDealtPreviewHtml = function() {
 							file = selectFiles[i];
 							if (file) {
-								var reader = new FileReader();
+								var reader = new FileReader()
 								reader.onload = function(e) {
 									// 处理下配置参数和格式的html
 									html += self.funDisposePreviewHtml(file, e);
@@ -329,37 +333,17 @@
 								// 删除方法
 								$(".file_del").click(function() {
 									ZYFILE.funDeleteFile(parseInt($(this).attr("data-index")), true);
-									return false;	
+									return true;	
 								});
 							}
 							
 							if($(".file_edit").length>0){
-								if($("head").html().indexOf("zyPopup")<0){  // 代表没有加载过js和css文件
-									// 动态引入裁剪的js和css文件
-									$("<link>").attr({ rel: "stylesheet",
-								        type: "text/css",
-								        href: "zyPopup/css/zyPopup.css"
-								    }).appendTo("head");
-									$.getScript("zyPopup/js/zyPopup.js", function(){
-										// 编辑方法
-										$(".file_edit").click(function() {
-											// 获取选择的文件索引
-											var imgSrc = $("#uploadImage_"+$(this).attr("data-index")).attr("src");
-											// 打开弹出层
-											self.createPopupPlug(imgSrc, $(this).attr("data-index"));
-											return false;	
-										});
-									});
-								}else{  // 加载过js和css文件
-									// 编辑方法
-									$(".file_edit").click(function() {
-										// 获取选择的文件索引
-										var imgSrc = $("#uploadImage_"+$(this).attr("data-index")).attr("src");
-										// 打开弹出层
-										self.createPopupPlug(imgSrc, $(this).attr("data-index"));
-										return false;	
-									});
-								}
+								// 编辑方法
+								$(".file_edit").click(function() {
+									// 调用编辑操作
+									//ZYFILE.funEditFile(parseInt($(this).attr("data-index")), true);
+									return false;	
+								});
 							}
 						};
 						
@@ -377,7 +361,6 @@
 						funDealtPreviewHtml();		
 					},
 					onDelete: function(file, files) {
-						para.onDelete(file, files);  // 回调方法
 						// 移除效果
 						$("#uploadList_" + file.index).fadeOut();
 						// 重新设置统计栏信息
@@ -386,7 +369,6 @@
 						console.info(files);
 					},
 					onProgress: function(file, loaded, total) {
-						para.onProgress(file, loaded, total);  // 回调方法
 						var eleProgress = $("#uploadProgress_" + file.index), percent = (loaded / total * 100).toFixed(2) + '%';
 						if(eleProgress.is(":hidden")){
 							eleProgress.show();
@@ -394,10 +376,10 @@
 						eleProgress.css("width",percent);
 					},
 					onSuccess: function(file, response) {
-						para.onSuccess(file, response);  // 回调方法
+						para.onSuccess(file, response);
 						$("#uploadProgress_" + file.index).hide();
 						$("#uploadSuccess_" + file.index).show();
-						$("#uploadInf").append("<p>上传成功，文件地址是：" + response + "</p>");
+						// $("#uploadInf").append("<p>后台信息：" + response + "</p>");
 						// 根据配置参数确定隐不隐藏上传成功的文件
 						if(para.finishDel){
 							// 移除效果
@@ -405,22 +387,14 @@
 							// 重新设置统计栏信息
 							self.funSetStatusInfo(ZYFILE.funReturnNeedFiles());
 						}
-						if($("#uploadTailor_"+file.index).length>0){
-							$("#uploadTailor_" + file.index).hide();
-						}
 					},
-					onFailure: function(file, response) {
-						para.onFailure(file, response);  // 回调方法
+					onFailure: function(file) {
 						$("#uploadProgress_" + file.index).hide();
 						$("#uploadSuccess_" + file.index).show();
-						if($("#uploadTailor_"+file.index).length>0){
-							$("#uploadTailor_" + file.index).hide();
-						}
 						$("#uploadInf").append("<p>文件" + file.name + "上传失败！</p>");	
 						//$("#uploadImage_" + file.index).css("opacity", 0.2);
 					},
 					onComplete: function(response){
-						para.onComplete(response);  // 回调方法
 						console.info(response);
 					},
 					onDragOver: function() {
@@ -473,8 +447,6 @@
 		            });
 				}
 			};
-			
-			
 			// 初始化上传控制层插件
 			this.init();
 		});

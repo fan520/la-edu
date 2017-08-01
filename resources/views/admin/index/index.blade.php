@@ -97,6 +97,17 @@
 				</ul>
 			</dd>
 		</dl>
+		<dl id="menu-paper">
+			<dt><i class="Hui-iconfont">&#xe692;</i> 考试管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
+			<dd>
+				<ul>
+					<li><a data-href="{{ asset('admin/paper/index') }}" data-title="试卷管理" href="javascript:void(0)">试卷管理</a></li>
+					<li><a data-href="{{ asset('admin/question/index') }}" data-title="试题管理" href="javascript:void(0)">试题管理</a></li>
+					<li><a data-href="{{ asset('admin/sheet/index') }}" data-title="答题卡管理" href="javascript:void(0)">答题卡管理</a></li>
+
+				</ul>
+			</dd>
+		</dl>
 		<dl id="menu-comments">
 			<dt><i class="Hui-iconfont">&#xe622;</i> 评论管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 			<dd>

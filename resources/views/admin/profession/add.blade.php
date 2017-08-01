@@ -16,8 +16,20 @@
 </head>
 <body>
 <article class="page-container">
-    <form class="form form-horizontal" id="form-admin-add" method="post">
+    <form class="form form-horizontal" id="form-admin-add" method="post" action="{{ url('admin/profession/add') }}">
         <input type="hidden" name="_token" value="{{ csrf_token() }}">
+        <div class="row cl">
+            @if (count($errors) > 0)
+                <div>
+                    @foreach ($errors->all() as $error)
+                        <div style="margin-left:200px;width:300px;background-color:#FFFF00;border: solid 1px #9da0a4;border-radius: 3px;">
+                            <font color="red" style="margin-left:50px;">{{ $error }}</font>
+                            <?php break;?>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>专业名称：</label>
             <div class="formControls col-xs-8 col-sm-8">
@@ -39,20 +51,16 @@
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-3">授课老师：</label>
             <div class="formControls col-xs-8 col-sm-8">
-                    <dl class="permission-list">
-
-
-                                <dd style="margin-left: 0px;">
-                                    @foreach($teachers as $v)
-                                            <label class="" style="margin-right:10px;display:inline-block;">
-                                                <input type="checkbox" value="{{ $v->id }}"
-                                                       name="auth_ids[]">{{ $v->username }}
-                                            </label>
-                                    @endforeach
-                                </dd>
-
-
-                    </dl>
+                <dl class="permission-list">
+                    <dd style="margin-left: 0px;">
+                        @foreach($teachers as $v)
+                            <label class="" style="margin-right:10px;display:inline-block;">
+                                <input type="checkbox" value="{{ $v->id }}"
+                                       name="teachers_ids[]">{{ $v->username }}
+                            </label>
+                        @endforeach
+                    </dd>
+                </dl>
             </div>
         </div>
         <div class="row cl">
@@ -69,7 +77,7 @@
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-3">幻灯片：</label>
             <div class="formControls col-xs-8 col-sm-8">
-                <div id="ppt_upload" class="demo"></div>
+                <div id="ppt_upload"></div>
             </div>
         </div>
         <div class="row cl">
@@ -134,56 +142,37 @@
 {{--<script type="text/javascript" src="{{ asset('common/vendor/zyupload/demo.js') }}"></script>--}}
 
 <script type="text/javascript">
+
+
     $(function () {
         //zyupload
-        // 初始化插件
-        $("#ppt_upload").zyUpload({
-            width            :   "530px",                 // 宽度
-            height           :   "100%",                 // 宽度
-            itemWidth        :   "120px",                 // 文件项的宽度
-            itemHeight       :   "100px",                 // 文件项的高度
-            //url              :   "/upload/UploadAction",  // 上传文件的路径
-            url              :   "{{ url('admin/upload/qiniu') }}",
-            multiple         :   true,                    // 是否可以多个文件上传
-            dragDrop         :   true,                    // 是否可以拖动上传文件
-            del              :   true,                    // 是否可以删除文件
-            finishDel        :   false,  				  // 是否在上传文件完成后删除预览
-            /* 外部获得的回调接口 */
-            onSelect: function(selectFiles, allFiles){    // 选择文件的回调方法  selectFile:当前选中的文件  allFiles:还没上传的全部文件
-//                console.info("当前选择了以下文件：");
-//                console.info(selectFiles);
+        //实例化上传的选择框
+        $('#ppt_upload').zyUpload({
+            width: "550px", // 宽度
+            height: '100%',
+            url: "{{ url('admin/upload/qiniu') }}",//配置上传地址
+            // 文件上传成功的回调方法，参数file是文件上传的信息，参数responseInfo是服务器的返回值
+            // 服务器返回值的形式其是【原始信息：json字符串】
+            onSuccess: function (file, responseInfo) {
+                //转json字符串为js对象
+                var rst = eval('(' + responseInfo + ')');
+                //判断是否成功
+                if (rst.status === 1) {
+                    layer.msg('文件上传成功！', {icon: '1', time: 1500});
+                    //追加上传之后的文件路径到容器中
+                    $('#duowenjian').append("<input type='hidden' name='ppt_imgs[]' value='" + rst.filepath + "'/>");
+                    //before  after   insertBefore  insertAfter  append  appendTo  preprend prependTo
+                }
             },
-            onProgress: function(file, loaded, total){    // 正在上传的进度的回调方法
-//                console.info("当前正在上传此文件：");
-//                console.info(file.name);
-//                console.info("进度等信息如下：");
-//                console.info(loaded);
-//                console.info(total);
-            },
-            onDelete: function(file, files){              // 删除一个文件的回调方法 file:当前删除的文件  files:删除之后的文件
-//                console.info("当前删除了此文件：");
-//                console.info(file.name);
-            },
-            onSuccess: function(file, response){          // 文件上传成功的回调方法
-                console.info(response);
-//                console.info(file.name);
-            },
-            onFailure: function(file, response){          // 文件上传失败的回调方法
-//                console.info("此文件上传失败：");
-//                console.info(file.name);
-            },
-            onComplete: function(response){           	  // 上传完成的回调方法
-//                console.info("文件上传完成");
-//                console.info(response);
-            }
-        });
-        //向后台传递_token
-        $(document).on('zyFile.formdata.created',function(event, formdata ,zyfile){
-            formdata.append('_token',"{{ csrf_token() }}");//请求的数据中追加_token
-            zyfile.uploadFileName = 'file';//修改上传文件的字段名称.保持与后台接受的名字一样
         });
 
-
+        //监听zyFile.formdata.created事件
+        $(document).on('zyFile.formdata.created', function (event, formdata, zyfile) {
+            //console.log(formdata);
+            formdata.append('_token', "{{csrf_token()}}");//追加token
+            //更改上传文件的name值
+            zyfile.uploadFileName = 'file';//与后台方法的一致
+        });
 
 
         $(".permission-list dt input:checkbox").click(function () {
@@ -215,27 +204,31 @@
             onkeyup: false,
             focusCleanup: true,
             success: "valid",
-            submitHandler: function (form) {
-                $(form).ajaxSubmit({
-                    type: 'post',
-                    url: "{{ url('admin/profession/add') }}",
-                    success: function (data) {
-                        if (data.status == 1) {
-                            layer.msg(data.msg, {icon: 1, time: 1000});
-                            setTimeout(function () {
-                                parent.window.location.reload();
-                                var index = parent.layer.getFrameIndex(window.name);
-                                parent.layer.close(index);
-                            }, 1000);
-                        } else {
-                            layer.msg(data.msg, {icon: 2, time: 1000});
-                        }
-                    },
-                    error: function (XmlHttpRequest, textStatus, errorThrown) {
-                        layer.msg('error!', {icon: 2, time: 1000});
-                    }
-                });
-            }
+            {{--submitHandler: function (form) {--}}
+            {{--$(form).ajaxSubmit({--}}
+            {{--type: 'post',--}}
+            {{--url: "{{ url('admin/profession/add') }}",--}}
+            {{--success: function (data) {--}}
+            {{--if (data.status == 1) {--}}
+            {{--layer.msg(data.msg, {icon: 1, time: 1000});--}}
+            {{--setTimeout(function () {--}}
+            {{--parent.window.location.reload();--}}
+            {{--var index = parent.layer.getFrameIndex(window.name);--}}
+            {{--parent.layer.close(index);--}}
+            {{--}, 1000);--}}
+            {{--} else {--}}
+            {{--for (var i = 0; i < data.length; i++) {--}}
+            {{--console.log(i+":"+data[i]);--}}
+            {{--};--}}
+
+            {{--layer.msg(data.msg, {icon: 2, time: 1000});--}}
+            {{--}--}}
+            {{--},--}}
+            {{--error: function (XmlHttpRequest, textStatus, errorThrown) {--}}
+            {{--layer.msg('error!', {icon: 2, time: 1000});--}}
+            {{--}--}}
+            {{--});--}}
+            {{--}--}}
         });
 
         // 初始化Web Uploader

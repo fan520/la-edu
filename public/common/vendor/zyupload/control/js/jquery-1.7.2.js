@@ -13,6 +13,7 @@
  *
  * Date: Wed Mar 21 12:46:34 2012 -0700
  */
+ /* 代码整理：懒人之家 www.lanrenzhijia.com */
 (function( window, undefined ) {
 
 // Use the correct document accordingly with window argument (sandbox)

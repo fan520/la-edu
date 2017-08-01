@@ -54,7 +54,6 @@ Route::group(['middleware' => ['auth:admin','checkrbac'],'namespace' => 'Admin',
     Route::post('protype/del','ProtypeController@del');//批量删除分类(删)
     Route::match(['get','post'],'protype/edit/{id}','ProtypeController@edit');//编辑分类(改)
     Route::match(['get','post'],'protype/index','ProtypeController@index');//分类列表和查询分类(查)
-    Route::post('protype/logo','ProtypeController@logo');//批量删除分类(删)
     //*--专业分类end--*//
 
     //*--专业start--*//
@@ -62,8 +61,20 @@ Route::group(['middleware' => ['auth:admin','checkrbac'],'namespace' => 'Admin',
     Route::post('profession/del','ProfessionController@del');//批量删除专业(删)
     Route::match(['get','post'],'profession/edit/{id}','ProfessionController@edit');//编辑专业(改)
     Route::match(['get','post'],'profession/index','ProfessionController@index');//专业列表和查询分类(查)
-    Route::post('profession/logo','ProfessionController@logo');//批量删除专业(删)
     //*--专业end--*//
+
+    //*--试卷start--*//
+    Route::match(['get','post'],'paper/add','PaperController@add');//添加试卷(增)
+    Route::match(['get','post'],'paper/import','PaperController@import');//添加试卷(增)
+    Route::post('paper/del','PaperController@del');//批量删除试卷(删)
+    Route::match(['get','post'],'paper/edit/{id}','PaperController@edit');//编辑试卷(改)
+    Route::match(['get','post'],'paper/index','PaperController@index');//试卷列表和查询分类(查)
+
+    //*--试卷end--*//
+
+
+
+
 
 
 

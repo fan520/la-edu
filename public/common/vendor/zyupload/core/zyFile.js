@@ -2,19 +2,20 @@
  * zyFile.js 基于HTML5 文件上传的核心脚本 http://www.czlqibu.com
  * by zhangyan 2014-06-21   QQ : 623585268
 */
-
+ /* 代码整理：懒人之家 www.lanrenzhijia.com */
 var ZYFILE = {
 		fileInput : null,             // 选择文件按钮dom对象
 		uploadInput : null,           // 上传文件按钮dom对象
-		dragDrop: null,				  // 拖拽敏感区域
-		url : "",  					  // 上传action路径
+		dragDrop: null,				  //拖拽敏感区域
+		url : "fileUploadAction!execute",  					  // 上传action路径
 		uploadFile : [],  			  // 需要上传的文件数组
 		lastUploadFile : [],          // 上一次选择的文件数组，方便继续上传使用
 		perUploadFile : [],           // 存放永久的文件数组，方便删除使用
 		fileNum : 0,                  // 代表文件总个数，因为涉及到继续添加，所以下一次添加需要在它的基础上添加索引
+		uploadFileName: "upload",
 		/* 提供给外部的接口 */
 		filterFile : function(files){ // 提供给外部的过滤文件格式等的接口，外部需要把过滤后的文件返回
-			return files;
+		
 		},
 		onSelect : function(selectFile, files){      // 提供给外部获取选中的文件，供外部实现预览等功能  selectFile:当前选中的文件  allFiles:还没上传的全部文件
 			
@@ -113,12 +114,14 @@ var ZYFILE = {
 			var tmpFile = [];  // 用来替换的文件数组
 			// 合并下上传的文件
 			var delFile = this.perUploadFile[delFileIndex];
-			//console.info(delFile);
+			console.info(delFile);
 			// 目前是遍历所有的文件，对比每个文件  删除
 			$.each(this.uploadFile, function(k, v){
 				if(delFile != v){
 					// 如果不是删除的那个文件 就放到临时数组中
 					tmpFile.push(v);
+				}else{
+					
 				}
 			});
 			this.uploadFile = tmpFile;
@@ -142,13 +145,10 @@ var ZYFILE = {
 		// 上传单个个文件
 		funUploadFile : function(file){
 			var self = this;  // 在each中this指向没个v  所以先将this保留
+
 			var formdata = new FormData();
-			formdata.append("file", file);	 
-			// 添加裁剪的坐标和宽高发送给后台
-			if($("#uploadTailor_"+file.index).length>0){
-				// 除了这样获取不到zyUpload的值啊啊啊啊啊啊啊啊啊啊啊
-				formdata.append("tailor", $("#uploadTailor_"+file.index).attr("tailor"));	
-			}
+			$(document).trigger('zyFile.formdata.created', [formdata, this]);
+			formdata.append(this.uploadFileName, file);
 			var xhr = new XMLHttpRequest();
 			// 绑定上传事件
 			// 进度
@@ -161,6 +161,7 @@ var ZYFILE = {
 	    		// 从文件中删除上传成功的文件  false是不执行onDelete回调方法
 		    	self.funDeleteFile(file.index, false);
 		    	// 回调到外部
+				console.log(self.onSuccess.constructor);
 		    	self.onSuccess(file, xhr.responseText);
 		    	if(self.uploadFile.length==0){
 		    		// 回调全部完成方法
@@ -172,8 +173,7 @@ var ZYFILE = {
 		    	// 回调到外部
 		    	self.onFailure(file, xhr.responseText);
 		    }, false);  
-			
-			xhr.open("POST",self.url, true);
+			xhr.open("POST", self.url, true);
 			xhr.send(formdata);
 		},
 		// 返回需要上传的文件
@@ -208,4 +208,20 @@ var ZYFILE = {
 			}
 		}
 };
+
+
+
+ /* 代码整理：懒人之家 www.lanrenzhijia.com */
+
+
+
+
+
+
+
+
+
+
+
+
 
