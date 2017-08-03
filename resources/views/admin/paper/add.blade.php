@@ -42,7 +42,7 @@
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>所属课程：</label>
             <div class="formControls col-xs-8 col-sm-8"> <span class="select-box" style="width:150px;">
-			<select class="select" name="pid" size="1">
+			<select class="select" name="course_id" size="1">
                <option value="0">请选择</option>
 				@foreach($course as $v)
                     <option value="{{ $v->id }}"> {{ $v->course_name }}</option>

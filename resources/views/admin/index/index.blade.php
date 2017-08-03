@@ -71,10 +71,11 @@
 <aside class="Hui-aside">
 	<div class="menu_dropdown bk_2">
 		<dl id="menu-article">
-			<dt><i class="Hui-iconfont">&#xe616;</i> 资讯管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
+			<dt><i class="Hui-iconfont">&#xe616;</i> 课程管理<i class="Hui-iconfont menu_dropdown-arrow">&#xe6d5;</i></dt>
 			<dd>
 				<ul>
-					<li><a data-href="article-list.html" data-title="资讯管理" href="javascript:void(0)">资讯管理</a></li>
+					<li><a data-href="{{ url('admin/course/index') }}" data-title="课程管理" href="javascript:void(0)">课程管理</a></li>
+					<li><a data-href="{{ url('admin/lession/index') }}" data-title="课时管理" href="javascript:void(0)">课时管理</a></li>
 				</ul>
 			</dd>
 		</dl>

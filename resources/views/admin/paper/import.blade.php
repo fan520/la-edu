@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
     <meta http-equiv="Cache-Control" content="no-siteapp" />
     @include('admin.common.header')
-    <title>修改试卷 - 试卷管理 </title>
+    <title>导入试卷 - 试卷管理 </title>
     <meta name="keywords" content="">
     <meta name="description" content="">
 
@@ -36,7 +36,7 @@
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>试卷名称：</label>
             <div class="formControls col-xs-8 col-sm-8">
-                <input type="text" class="input-text" value="{{ $edit->paper_name }}" placeholder="" id="paper_name" name="paper_name">
+                <input type="text" class="input-text" value="" placeholder="" id="paper_name" name="paper_name">
             </div>
         </div>
         <div class="row cl">
@@ -45,7 +45,7 @@
 			<select class="select" name="course_id" size="1">
                <option value="0">请选择</option>
 				@foreach($course as $v)
-                    <option value="{{ $v->id }}" @if($v->id==$edit->course_id) selected @endif> {{ $v->course_name }}</option>
+                    <option value="{{ $v->id }}"> {{ $v->course_name }}</option>
                 @endforeach
 			</select>
 			</span>
@@ -54,24 +54,24 @@
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-3">总分：</label>
             <div class="formControls col-xs-8 col-sm-8">
-                <input type="text" class="input-text" value="{{ $edit->score }}" placeholder="" id="score" name="score">
+                <input type="text" class="input-text" value="100" placeholder="" id="score" name="score">
             </div>
         </div>
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-3">排序：</label>
             <div class="formControls col-xs-8 col-sm-8">
-                <input type="text" class="input-text" value="{{ $edit->sort }}" placeholder="" id="sort" name="sort">
+                <input type="text" class="input-text" value="0" placeholder="" id="sort" name="sort">
             </div>
         </div>
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>状态：</label>
             <div class="formControls col-xs-8 col-sm-8 skin-minimal">
                 <div class="radio-box">
-                    <input name="status" type="radio" id="sex-1" value="1" @if($edit->status==1) checked @endif>
+                    <input name="status" type="radio" id="sex-1" value="1" checked>
                     <label for="sex-1">启用</label>
                 </div>
                 <div class="radio-box">
-                    <input name="status" type="radio" id="sex-1" value="2" @if($edit->status==2) checked @endif>
+                    <input name="status" type="radio" id="sex-1" value="2">
                     <label for="sex-1">禁用</label>
                 </div>
             </div>
@@ -79,12 +79,12 @@
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-3">描述：</label>
             <div class="formControls col-xs-8 col-sm-8">
-                <input type="text" class="input-text" value="{{ $edit->description }}" placeholder="" id="description" name="description">
+                <input type="text" class="input-text" value="" placeholder="" id="description" name="description">
             </div>
         </div>
         <div class="row cl">
             <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
-                <input type="submit" value="确定" class="btn btn-secondary radius">
+                <input type="submit" value="导入" class="btn btn-secondary radius">
                 <button onClick="removeIframe();" class="btn btn-default radius" type="button">&nbsp;&nbsp;取消&nbsp;&nbsp;</button>
             </div>
         </div>
@@ -146,7 +146,7 @@
             multiple:false
         });
 
-        // 当有文件添加进来的时候
+        // 当有文件导入进来的时候
         uploader.on( 'fileQueued', function( file ) {  // webuploader事件.当选择文件后，文件被加
 
             // 创建缩略图
@@ -154,18 +154,18 @@
             // thumbnailWidth x thumbnailHeight 为 100 x 100
             uploader.makeThumb( file, function( error, src ) {   //webuploader方法
 //            if ( error ) {
-//                layer.alert("图片错误,请重新添加!");
+//                layer.alert("图片错误,请重新导入!");
 //                return;
 //            }
 
-                //上面的html代码中已经有一个img,这里最多允许添加一张图片,所以有新图片添加进来的时候,会替换掉原来的图片,而不是新加入一个
+                //上面的html代码中已经有一个img,这里最多允许导入一张图片,所以有新图片导入进来的时候,会替换掉原来的图片,而不是新加入一个
                 $('#logo_thumb').prop( 'src', src );
             }, thumbnailWidth, thumbnailHeight );
         });
 
 
 
-        // 文件上传成功，给item添加成功class, 用样式标记上传成功。
+        // 文件上传成功，给item导入成功class, 用样式标记上传成功。
         uploader.on( 'uploadSuccess', function( file ,res) {
 
             if(res.status==1){//上传成功!
@@ -174,7 +174,7 @@
                 //提示成功信息
                 layer.msg(res.msg, {icon: 6});
 
-                //关闭添加页面
+                //关闭导入页面
 //			setTimeout(function(){
 //                var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
 //                parent.layer.close(index);//关闭当前弹出层
@@ -216,7 +216,7 @@
             submitHandler: function (form) {
                 $("form").ajaxSubmit({
                     type: 'post',
-                    url: "{{ url('admin/paper/edit') }}/{{ $edit->id }}",
+                    url: "{{ url('admin/paper/add') }}",
                     success: function (data) {
                         if (data.status == 1) {
                             layer.msg(data.msg, {icon: 1, time: 1000});

@@ -44,10 +44,11 @@ Route::group(['middleware' => ['auth:admin','checkrbac'],'namespace' => 'Admin',
     Route::post('member/del','MemberController@del');//批量删除权限(删)
     Route::match(['get','post'],'member/edit/{id}','MemberController@edit');//编辑权限(改)
     Route::match(['get','post'],'member/index','MemberController@index');//权限列表和查询权限(查)
-    Route::post('upload/avatar','UploadController@avatar');//图片上传到本服务器
-    Route::post('upload/qiniu','UploadController@qiniu');//图片上传到七牛云
     //*--会员end--*//
 
+    //文件上传
+    Route::post('upload/localpublic','UploadController@localPublic');//图片上传到本服务器
+    Route::post('upload/qiniu','UploadController@qiniu');//图片上传到七牛云
 
     //*--专业分类start--*//
     Route::match(['get','post'],'protype/add','ProtypeController@add');//添加分类(增)
@@ -55,6 +56,15 @@ Route::group(['middleware' => ['auth:admin','checkrbac'],'namespace' => 'Admin',
     Route::match(['get','post'],'protype/edit/{id}','ProtypeController@edit');//编辑分类(改)
     Route::match(['get','post'],'protype/index','ProtypeController@index');//分类列表和查询分类(查)
     //*--专业分类end--*//
+
+
+    //*--课程管理start--*//
+    Route::match(['get','post'],'course/add','CourseController@add');//添加专业(增)
+    Route::post('course/del','CourseController@del');//批量删除专业(删)
+    Route::match(['get','post'],'course/edit/{id}','CourseController@edit');//编辑专业(改)
+    Route::match(['get','post'],'course/index','CourseController@index');//专业列表和查询分类(查)
+    //*--课程管理end--*//
+
 
     //*--专业start--*//
     Route::match(['get','post'],'profession/add','ProfessionController@add');//添加专业(增)
@@ -69,8 +79,16 @@ Route::group(['middleware' => ['auth:admin','checkrbac'],'namespace' => 'Admin',
     Route::post('paper/del','PaperController@del');//批量删除试卷(删)
     Route::match(['get','post'],'paper/edit/{id}','PaperController@edit');//编辑试卷(改)
     Route::match(['get','post'],'paper/index','PaperController@index');//试卷列表和查询分类(查)
-
     //*--试卷end--*//
+
+    //*--试题start--*//
+    Route::match(['get','post'],'question/add','QuestionController@add');//添加试题(增)
+    Route::match(['get','post'],'question/import','QuestionController@import');//导入试题(增)
+    Route::match(['get','post'],'question/export','QuestionController@export');//导出试题(增)
+    Route::post('question/del','QuestionController@del');//批量删除试题(删)
+    Route::match(['get','post'],'question/edit/{id}','QuestionController@edit');//编辑试题(改)
+    Route::match(['get','post'],'question/index','QuestionController@index');//试题列表和查询分类(查)
+    //*--试题end--*//
 
 
 

@@ -178,6 +178,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        //excel
+        \Maatwebsite\Excel\ExcelServiceProvider::class,
         //七牛云支持
         zgldh\QiniuStorage\QiniuFilesystemServiceProvider::class,
         //自定义下载的调试类
@@ -233,6 +235,8 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+        //excel别名
+        'Excel' => \Maatwebsite\Excel\ExcelServiceProvider::class,
         //引入第三方验证码类
         'Captcha' => Mews\Captcha\Facades\Captcha::class,
         //自定义下载的调试类
@@ -240,5 +244,6 @@ return [
 
 
     ],
+
 
 ];

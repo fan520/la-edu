@@ -9,13 +9,13 @@ use Illuminate\Support\Facades\Storage;
 
 class UploadController extends Controller
 {
-    /* @fun: 会员头像上传
+    /* @fun: 文件上传到本地
      * @author: fanzhiyi
      * @date: 2017/7/26 17:08
      * @param:
      * @return:
      */
-    public function avatar(Request $request)
+    public function localPublic(Request $request)
     {
         //判断文件合法性
         if($request->hasFile('file') && $request->file('file')->isValid()){
@@ -44,13 +44,13 @@ class UploadController extends Controller
             }else{
                 return [
                     'status' => 2,
-                    'msg' => 'avatar uploaded failed!',
+                    'msg' => 'uploaded failed!',
                 ];
             }
         }else{
             return [
                 'status' => 2,
-                'msg' => 'avatar uploaded failed!',
+                'msg' => 'uploaded failed!',
             ];
         }
     }

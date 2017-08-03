@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
     <meta http-equiv="Cache-Control" content="no-siteapp" />
     @include('admin.common.header')
-    <title>修改试卷 - 试卷管理 </title>
+    <title>添加试题 - 试题管理 </title>
     <meta name="keywords" content="">
     <meta name="description" content="">
 
@@ -34,57 +34,50 @@
             </div>
         @endif
         <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>试卷名称：</label>
-            <div class="formControls col-xs-8 col-sm-8">
-                <input type="text" class="input-text" value="{{ $edit->paper_name }}" placeholder="" id="paper_name" name="paper_name">
-            </div>
-        </div>
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>所属课程：</label>
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>所属试卷：</label>
             <div class="formControls col-xs-8 col-sm-8"> <span class="select-box" style="width:150px;">
-			<select class="select" name="course_id" size="1">
+			<select class="select" name="paper_id" size="1">
                <option value="0">请选择</option>
-				@foreach($course as $v)
-                    <option value="{{ $v->id }}" @if($v->id==$edit->course_id) selected @endif> {{ $v->course_name }}</option>
+				@foreach($paper as $v)
+                    <option value="{{ $v->id }}"> {{ $v->paper_name }}</option>
                 @endforeach
 			</select>
 			</span>
             </div>
         </div>
         <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3">总分：</label>
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>试题内容：</label>
             <div class="formControls col-xs-8 col-sm-8">
-                <input type="text" class="input-text" value="{{ $edit->score }}" placeholder="" id="score" name="score">
+                <textarea class="textarea" style="" id="question" name="question"></textarea>
             </div>
         </div>
         <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3">排序：</label>
+            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>选项内容：</label>
             <div class="formControls col-xs-8 col-sm-8">
-                <input type="text" class="input-text" value="{{ $edit->sort }}" placeholder="" id="sort" name="sort">
+                <textarea class="textarea" style="" id="options" name="options"></textarea>
             </div>
         </div>
         <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>状态：</label>
-            <div class="formControls col-xs-8 col-sm-8 skin-minimal">
-                <div class="radio-box">
-                    <input name="status" type="radio" id="sex-1" value="1" @if($edit->status==1) checked @endif>
-                    <label for="sex-1">启用</label>
-                </div>
-                <div class="radio-box">
-                    <input name="status" type="radio" id="sex-1" value="2" @if($edit->status==2) checked @endif>
-                    <label for="sex-1">禁用</label>
-                </div>
+            <label class="form-label col-xs-4 col-sm-3">本题答案：</label>
+            <div class="formControls col-xs-8 col-sm-8">
+                <input type="text" class="input-text" value="" placeholder="" id="answer" name="answer">
             </div>
         </div>
         <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3">描述：</label>
+            <label class="form-label col-xs-4 col-sm-3">本题总分：</label>
             <div class="formControls col-xs-8 col-sm-8">
-                <input type="text" class="input-text" value="{{ $edit->description }}" placeholder="" id="description" name="description">
+                <input type="text" class="input-text" value="" placeholder="" id="score" name="score">
+            </div>
+        </div>
+        <div class="row cl">
+            <label class="form-label col-xs-4 col-sm-3">备注：</label>
+            <div class="formControls col-xs-8 col-sm-8">
+                <input type="text" class="input-text" value="" placeholder="" id="remark" name="remark">
             </div>
         </div>
         <div class="row cl">
             <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
-                <input type="submit" value="确定" class="btn btn-secondary radius">
+                <input type="submit" value="添加" class="btn btn-secondary radius">
                 <button onClick="removeIframe();" class="btn btn-default radius" type="button">&nbsp;&nbsp;取消&nbsp;&nbsp;</button>
             </div>
         </div>
@@ -216,7 +209,7 @@
             submitHandler: function (form) {
                 $("form").ajaxSubmit({
                     type: 'post',
-                    url: "{{ url('admin/paper/edit') }}/{{ $edit->id }}",
+                    url: "{{ url('admin/question/add') }}",
                     success: function (data) {
                         if (data.status == 1) {
                             layer.msg(data.msg, {icon: 1, time: 1000});

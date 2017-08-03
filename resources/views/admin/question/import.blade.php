@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
     <meta http-equiv="Cache-Control" content="no-siteapp" />
     @include('admin.common.header')
-    <title>修改试卷 - 试卷管理 </title>
+    <title>导入试题 - 试题管理 </title>
     <meta name="keywords" content="">
     <meta name="description" content="">
 
@@ -24,28 +24,13 @@
 <article class="page-container">
     <form class="form form-horizontal" id="form-admin-add"  method="post">
         <input type="hidden" name="_token" value="{{csrf_token()}}">
-        @if (count($errors) > 0)
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>试卷名称：</label>
-            <div class="formControls col-xs-8 col-sm-8">
-                <input type="text" class="input-text" value="{{ $edit->paper_name }}" placeholder="" id="paper_name" name="paper_name">
-            </div>
-        </div>
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>所属课程：</label>
             <div class="formControls col-xs-8 col-sm-8"> <span class="select-box" style="width:150px;">
-			<select class="select" name="course_id" size="1">
+			<select class="select" name="paper_id" size="1">
                <option value="0">请选择</option>
-				@foreach($course as $v)
-                    <option value="{{ $v->id }}" @if($v->id==$edit->course_id) selected @endif> {{ $v->course_name }}</option>
+				@foreach($paper as $v)
+                    <option value="{{ $v->id }}"> {{ $v->paper_name }}</option>
                 @endforeach
 			</select>
 			</span>
@@ -54,37 +39,20 @@
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-3">总分：</label>
             <div class="formControls col-xs-8 col-sm-8">
-                <input type="text" class="input-text" value="{{ $edit->score }}" placeholder="" id="score" name="score">
-            </div>
-        </div>
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3">排序：</label>
-            <div class="formControls col-xs-8 col-sm-8">
-                <input type="text" class="input-text" value="{{ $edit->sort }}" placeholder="" id="sort" name="sort">
-            </div>
-        </div>
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3"><span class="c-red">*</span>状态：</label>
-            <div class="formControls col-xs-8 col-sm-8 skin-minimal">
-                <div class="radio-box">
-                    <input name="status" type="radio" id="sex-1" value="1" @if($edit->status==1) checked @endif>
-                    <label for="sex-1">启用</label>
-                </div>
-                <div class="radio-box">
-                    <input name="status" type="radio" id="sex-1" value="2" @if($edit->status==2) checked @endif>
-                    <label for="sex-1">禁用</label>
+                <div id="uploader" class="wu-example">
+                    <!--用来存放文件信息-->
+                    <div id="thelist" class="uploader-list"></div>
+                    <div class="btns">
+                        <div id="picker">选择文件</div>
+                        <button id="ctlBtn" class="btn btn-default">开始上传</button>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="row cl">
-            <label class="form-label col-xs-4 col-sm-3">描述：</label>
-            <div class="formControls col-xs-8 col-sm-8">
-                <input type="text" class="input-text" value="{{ $edit->description }}" placeholder="" id="description" name="description">
-            </div>
-        </div>
+
         <div class="row cl">
             <div class="col-xs-8 col-sm-9 col-xs-offset-4 col-sm-offset-2">
-                <input type="submit" value="确定" class="btn btn-secondary radius">
+                <input type="submit" value="导入" class="btn btn-secondary radius">
                 <button onClick="removeIframe();" class="btn btn-default radius" type="button">&nbsp;&nbsp;取消&nbsp;&nbsp;</button>
             </div>
         </div>
@@ -123,66 +91,33 @@
 
         var uploader = WebUploader.create({
             formData:{'_token':"{{ csrf_token() }}"},
-            // 选完文件后，是否自动上传。
-            auto: false,
 
             // swf文件路径
             swf: "{{ asset('common/vendor/webuploader/Uploader.swf') }}",
 
             // 文件接收服务端。
-            server: "{{ url('admin/brand/logo') }}",
+            server: "{{ url('admin/upload/localpublic') }}",
 
             // 选择文件的按钮。可选。
             // 内部根据当前运行是创建，可能是input元素，也可能是flash.
-            pick: {id:$('#filePicker'),multiple:false},//只能选中一张图片
-
-            // 只允许选择图片文件。
-            accept: {
-                title: 'Images',
-                extensions: 'gif,jpg,jpeg,bmp,png',
-                mimeTypes: 'image/jpg,image/jpeg,image/png'   //默认是所有'image/*',但是这样会反应很慢,所以还是改成自定义的格式速度会很快
-            },
-            method:'POST',
-            multiple:false
+            pick: {id:$('#picker'),multiple:false},//只能选中一张图片
         });
-
-        // 当有文件添加进来的时候
-        uploader.on( 'fileQueued', function( file ) {  // webuploader事件.当选择文件后，文件被加
-
-            // 创建缩略图
-            // 如果为非图片文件，可以不用调用此方法。
-            // thumbnailWidth x thumbnailHeight 为 100 x 100
-            uploader.makeThumb( file, function( error, src ) {   //webuploader方法
-//            if ( error ) {
-//                layer.alert("图片错误,请重新添加!");
-//                return;
-//            }
-
-                //上面的html代码中已经有一个img,这里最多允许添加一张图片,所以有新图片添加进来的时候,会替换掉原来的图片,而不是新加入一个
-                $('#logo_thumb').prop( 'src', src );
-            }, thumbnailWidth, thumbnailHeight );
+        uploader.on( 'fileQueued', function( file ) {
+            $list.append( '<div id="' + file.id + '" class="item">' +
+                '<h4 class="info">' + file.name + '</h4>' +
+                '<p class="state">等待上传...</p>' +
+                '</div>' );
         });
-
-
-
-        // 文件上传成功，给item添加成功class, 用样式标记上传成功。
-        uploader.on( 'uploadSuccess', function( file ,res) {
-
-            if(res.status==1){//上传成功!
-                $('#brand_logo').val(res.url);
-
-                //提示成功信息
-                layer.msg(res.msg, {icon: 6});
-
-                //关闭添加页面
-//			setTimeout(function(){
-//                var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
-//                parent.layer.close(index);//关闭当前弹出层
-//			},2000);
-            } else{//上传失败!
-                //提示上传失败信息
-                layer.msg(res.msg, {icon: 5});
+        uploader.on( 'uploadSuccess', function( file ,data ) {
+            if(data.status == '1'){
+                $list.find("div[id="+file.id+"]").find('p').text(data.msg);
+                layer.msg(data.msg,{icon:1,time:1000});
+                //追加上传文件的路径
+                $list.append("<input type='hidden' name='filepath' value='"+data.filepath+"'/>");
+            } else{
+                layer.msg(data.msg,{icon:2,time:1000});
             }
+
         });
 
         //执行上传动作
@@ -216,8 +151,9 @@
             submitHandler: function (form) {
                 $("form").ajaxSubmit({
                     type: 'post',
-                    url: "{{ url('admin/paper/edit') }}/{{ $edit->id }}",
+                    url: "{{ url('admin/question/import') }}",
                     success: function (data) {
+                        data = JSON.parse(data);//把json字符串转成json对象
                         if (data.status == 1) {
                             layer.msg(data.msg, {icon: 1, time: 1000});
                             setTimeout(function () {
@@ -226,7 +162,7 @@
                                 parent.layer.close(index);
                             }, 1000);
                         } else {
-                            layer.msg(data.msg, {icon: 2, time: 1000});
+                            layer.msg('失败', {icon: 2, time: 1000});
                         }
                     },
                 });

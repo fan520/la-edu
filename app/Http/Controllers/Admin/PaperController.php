@@ -6,6 +6,7 @@ use App\Models\Admin\Course;
 use App\Models\Admin\Paper;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 class PaperController extends Controller
 {
@@ -40,7 +41,7 @@ class PaperController extends Controller
                 $query->where('paper_name', 'LIKE', '%' . $Protype_name . '%');
             }
             $data = $query->leftjoin('course','course.id','=','paper.course_id')->select('paper.*','course.course_name')->offset($offset)->limit($pagesize)->get()->toArray();
-
+//    p($data);
             return [
                 'draw' => $request->get('draw'),
                 'recordsFiltered' => $query->count(),//被检索后的数量
@@ -56,9 +57,13 @@ class PaperController extends Controller
      * @param:
      * @return:
      */
-    public function import()
+    public function import(Request $request)
     {
-        return '哈哈!!!';
+        if($request->isMethod('get')){
+            return view('admin.paper.import');
+        } elseif($request->isMethod('post')){
+
+        }
     }
 
     /* @fun: 添加专业分类
@@ -124,13 +129,13 @@ class PaperController extends Controller
         //非空判断
         if (!$id) {
             $res = false;
-        }
-
-        //批量删除
-        if (is_array($id)) {
-            $res = Protype::whereIn('id', $id)->delete();//返回受影响的行数
-        } else {
-            $res = Protype::where('id', $id)->delete();
+        }else{
+            //批量删除
+            if (is_array($id)) {
+                $res = Paper::whereIn('id', $id)->delete();//返回受影响的行数
+            } else {
+                $res = Paper::where('id', $id)->delete();
+            }
         }
 
         //返回结果
@@ -158,27 +163,24 @@ class PaperController extends Controller
     {
         if ($request->isMethod('get')) {
             //获取要修改的这条数据
-            $edit = Protype::find($id);
+            $edit = DB::table('paper')->where('id', $id)->first();;
 
-            //取出分类数据
-            $data = Protype::get()->toarray();
-
-            //无限极分类
-            $data = getTree($data);
+            //获取课程数据
+            $course = DB::table('course')->select('id','course_name')->get();
 
             //返回数据并显示页面
-            return view('admin.Protype.edit')->with(['edit'=>$edit,'data'=>$data]);
+            return view('admin.paper.edit')->with(['edit'=>$edit,'course'=>$course]);
         }
 
         if ($request->isMethod('post')) {
             //获取准备更新的数据
-            $input = $request->only(['protype_name', 'pid', 'sort', 'status','remark']);
+            $input = $request->only(['paper_name', 'course_id', 'score', 'sort','status','description']);
 
             //删除空数据
             $data = delRepeat($input);
 
             //执行更新操
-            $res = Protype::where('id', '=', $id)->update($input);
+            $res = Paper::where('id', '=', $id)->update($input);
 
             //返回执行结果
             if ($res) {
