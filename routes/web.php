@@ -59,11 +59,18 @@ Route::group(['middleware' => ['auth:admin','checkrbac'],'namespace' => 'Admin',
 
 
     //*--课程管理start--*//
-    Route::match(['get','post'],'course/add','CourseController@add');//添加专业(增)
-    Route::post('course/del','CourseController@del');//批量删除专业(删)
-    Route::match(['get','post'],'course/edit/{id}','CourseController@edit');//编辑专业(改)
-    Route::match(['get','post'],'course/index','CourseController@index');//专业列表和查询分类(查)
+    Route::match(['get','post'],'course/add','CourseController@add');//添加课程(增)
+    Route::post('course/del','CourseController@del');//批量删除课程(删)
+    Route::match(['get','post'],'course/edit/{id}','CourseController@edit');//编辑课程(改)
+    Route::match(['get','post'],'course/index','CourseController@index');//课程列表和查询分类(查)
     //*--课程管理end--*//
+
+    //*--课时管理start--*//
+    Route::match(['get','post'],'lession/add','LessionController@add');//添加课时(增)
+    Route::post('lession/del','LessionController@del');//批量删除课时(删)
+    Route::match(['get','post'],'lession/edit/{id}','LessionController@edit');//编辑课时(改)
+    Route::match(['get','post'],'lession/index','LessionController@index');//课时列表和查询分类(查)
+    //*--课时管理end--*//
 
 
     //*--专业start--*//
